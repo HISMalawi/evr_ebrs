@@ -1,0 +1,193 @@
+<style>
+    .even, .odd{
+        background: white !important;
+    }
+    .t-data{
+        border: 1px dotted #d3d3d3;
+        background: white;
+    }
+    th{
+        background-color: lightsteelblue !important;
+        color: black;
+        padding: 10px !important;
+    }
+    #birth_type, #example_filter{
+        margin-left: 15px;
+        float: right;
+        background:white;
+    }
+
+    #example_filter input{
+        margin-bottom: 10px;
+        font-size: 20px;
+        padding: 5px;
+        float: right;
+        width: 250px;
+        margin-left: 20px;
+        margin-right: 30px;
+    }
+
+    #example_filter label{
+        float: right;
+    }
+    .action-button{
+        width: 70px !important;
+        border-bottom: 1px solid ghostwhite !important;
+    }
+
+    .action-button div{
+        margin: 2px !important;
+        border-left: 1px solid #d3d3d3;
+    }
+
+    .action-button:hover, .action-button div:hover,
+    .action-button:active, .action-button div:active,
+    .white:hover, .white:active{
+        background: white !important;
+    }
+
+    .paginate_button{
+        font-size: 17px;
+        font-weight: bold;
+        padding: 13px !important;
+        padding-left: 16px !important;
+        padding-right: 16px !important;
+    }
+    td, td button{
+        padding: 0px !important;
+        margin: 0px !important;
+    }
+
+    .action-btn{
+        width: 50px;
+        padding: 0px !important;
+        margin: 0px !important;
+    }
+</style>
+
+<div class='data-table-container'>
+
+<table id="example" class="display" cellspacing="0" width="100%">
+  <thead>
+    <tr>
+      <th style="text-align: center;">#</th>
+      <th style="text-align: left;">Username</th>
+      <th style="text-align: left;">First name</th>
+      <th style="text-align: left;">Last name</th>
+      <th style="text-align: center; width:120px;">Role</th>
+      <th style="text-align: center;">Status</th>
+      <th>&nbsp;</th>
+  </tr>
+  </thead>
+    <%(@users || []).each_with_index do |record, i|
+      names = record.core_person.person_name
+      name = "#{names.first_name} #{names.last_name}"
+      next if record.user_role.blank?
+
+    %>
+      <tr>
+        <td style="text-align: left;"><%= (i+1) %></td>
+        <td style="text-align: left;"><%= record.username %></td>
+        <td style="text-align: left;"><%= names.first_name %></td>
+        <td style="text-align: left;"><%= names.last_name %></td>
+        <td style="text-align: center;"><%= record.user_role.role.role %></td>
+        <td style="text-align: center;">
+          <% if record.active == 1 || User.current.id == record.id%>
+          <a href="/block_user/<%=record.id%>">
+          <button class="btn btn-info" onclick = "return confirm('Are you sure you want to deactivate?')">
+            <%= image_tag "tick.png", class: 'btn-images' %></button>
+           </a>
+          <%else %>
+          <a href="/unblock_user/<%=record.id%>">
+          <button class="btn btn-info" onclick = "return confirm('Are you sure you want to activate?')">
+            <%= image_tag "cancel.png", class: 'btn-images' %></button>
+          <%end %>
+          </a>
+        </td>
+        <td>
+          <table style="width: 100%; text-align: center; border-style: none;">
+            <tr>
+              <td class="action-btn"><button class="btn btn-info" onmousedown="javascript:location='/users/<%=record.id%>';">
+                <%= image_tag "view.png", class: 'btn-images' %></button>
+              </td>
+              <td  class="action-btn"><button class="btn btn-warning" onmousedown="javascript:location='/users/<%=record.id%>/edit';">
+                <%= image_tag "edit.png", class: 'btn-images' %></button>
+               </td>
+              <td  class="action-btn">
+                <%if User.current.id == record.id %>
+                 <button class="btn btn-info"  onclick="dontVoid()">
+                  <%= image_tag "unvoidable.png", class: 'btn-images' %></button>
+                <%else%>
+                <a href="/void_user/<%=record.id%>">
+                  <button class="btn btn-success" onclick = "return confirm('Are you sure?')">
+                  <%= image_tag "void.png", class: 'btn-images' %> </button>
+               </a>
+                <%end%>
+               </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    <%end%>
+  <tbody>
+  </tbody>
+</table>
+
+</div>
+<button id="btnAction" class="blue" style="position: absolute; right: 160px; bottom: 20px;" onclick="window.location = '<%= new_user_path %>'">Add User</button>
+<script>
+var table ;
+$(document).ready(function() {
+    table = $('#example').DataTable( {
+           "pageLength": 4,
+           "processing": true,
+        });
+    var filter = __$("example_filter");
+    var search = filter.getElementsByTagName("input")[0];
+    search.setAttribute("onclick","changeFocusToMe(this)");
+    searchData(search)
+
+
+} );
+
+var search_value = ""
+
+function searchData(element){
+    if (element.value == 0 || search_value == element.value){
+        setTimeout(function(){
+            searchData(element);
+        },100)
+    }else{
+        search_value = element.value
+        table.search(search_value).draw() ;
+        setTimeout(function(){
+            searchData(element);
+        },100)
+    }
+}
+function dontVoid() {
+    alert("You cant delete yourself!");
+}
+
+
+function changeFocusToMe(control){
+
+    if(control) {
+
+        if(__$("cursor_for_" + control.id)){
+
+            if(__$("cursor")){
+
+                __$("cursor_for_" + control.id).appendChild(__$("cursor"));
+
+            }
+
+        }
+
+        showKeyboard(control)
+
+        }
+
+    }
+
+</script>

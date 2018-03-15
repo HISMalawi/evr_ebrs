@@ -1,0 +1,44 @@
+<style>
+body{
+    margin-top: 0px !important;
+}
+</style>
+<%= form_for @person, :url => '/person/create', :method => :post do |f| %>
+
+    <%= f.hidden_field :_rev rescue "" %>
+    <%= f.hidden_field :place_of_birth, :value => Location.where(location_id: SETTINGS['location_id']).first.name %>
+    <%= f.hidden_field :hospital_of_birth, :value => "#{Location.current.name}"  %>
+
+    <input type="hidden" id="person_birth_district" name="person[birth_district]" value="<%=Location.find(Location.current.parent_location).name%>">
+    <input id="person_relationship" name="person[relationship]" value="normal" type="hidden"/>
+    <input id="person_original_surname" type="hidden"/>
+    <input id="person_duplicate" name="person[duplicate]" type="hidden" />
+    <input id="person_is_exact_duplicate" type="hidden" name="person[is_exact_duplicate]" >
+
+
+    <section name="Mother Details">
+
+        <%= (f.text_field :last_name,
+        :helpText => "Surname",
+        :ajaxURL => "/get_last_names") %>
+
+    </section>
+
+    <section name="Father Details">
+
+
+    </section>
+
+    <section name="Child Details">
+
+
+    </section>
+
+    <section name="Informant Details">
+
+    </section>
+<% end %>
+
+<script>
+
+</script>

@@ -1,0 +1,198 @@
+        <script type="text/javascript" language="javascript" src="/javascripts/jquery.js"></script>
+        <link rel="stylesheet" href="/css/font-awesome/css/font-awesome.min.css">
+        <link rel="stylesheet" href="/css/edrs.css">
+		<style>
+            .side-pane{
+                font-size: 1.3em;
+                padding: 18px;
+                padding-left: 11px;
+                padding-right: 0px;
+                border-bottom: 1px solid lightgray;
+                cursor: pointer;
+                color: gray;
+            }
+            .sub-pane{
+                font-size: 1.1em;
+                padding: 9px;
+                text-align: right;
+                background: white;
+                border: none;
+                border-bottom: 0.1px dotted lightgray;
+                display: none;
+            }
+            .current{
+                display: table-cell;
+            }
+            .active{
+                background: lightblue;
+            }
+            #aspp_mode{
+                display: none !important;
+            }
+            #display{
+                height: 100%;
+            }
+		</style>
+
+        <div id="supercontainer" style="width: auto; overflow-y:
+                hidden;border:1px solid black;
+                padding-top: 5px;;margin: 0px !important;">
+
+                <table id="main" style="width: 100%;">
+                    <tr>
+                        <td valign="top" style="width: 20%;border: 1px solid gray; background: #f8f8ff; border-right: 4px solid #333333;padding: 0px;">
+                            <table id="table" style="width: 100%;">
+
+                            </table>
+                        </td>   
+                        <td style="width: 78%;background: #000000; height: 80vh;">
+                            <iframe id="iframe" src="/person/new?registration_type=<%=params[:registration_type]%>"
+                                    style="width: 100%; border: none;height: 100% !important;padding-top: 10px;">
+
+                            </iframe>
+                        </td>
+                    </tr>
+                </table>
+        </div>
+    <script>
+    function __$(id){
+        return document.getElementById(id);
+    }
+
+    function resizeDiv(){
+      var wH = window.innerHeight;
+      
+      __$("supercontainer").style.height = (wH * 0.80)+"px";
+      __$("main").style.height = (wH * 0.77)+"px";
+    }
+
+    resizeDiv();
+</script>
+<script>
+        function setup(active_id){
+            form =  window.frames['iframe'].contentDocument.getElementById("new_person_name");
+            if(!form){
+                setTimeout("setup()", 400);
+            }else {
+                var sections = form.getElementsByTagName("section")
+                var table = document.getElementById("table");
+
+                for (var i = 0; i < sections.length; i++) {
+                    var tr = document.createElement("tr");
+                    table.appendChild(tr);
+
+                    var td = document.createElement("td");
+                    td.innerHTML = sections[i].getAttribute("name");
+                    td.id = sections[i].getAttribute("name");
+                    td.setAttribute("name", sections[i].getAttribute("name"));
+                    td.className = "side-pane";
+                    tr.appendChild(td);
+
+                    td.onmousedown = function(){
+                        var nodes = document.getElementsByClassName("sub-pane");
+                        for(var o=0; o<nodes.length; o++){
+
+                            if(jQuery(nodes[o]).attr("section") == this.getAttribute("name")){
+                                var tst_cur_page = jQuery(nodes[o]).attr("tstcurrentpage");
+                                if(typeof(tst_cur_page) != "undefined" && parseInt(tst_cur_page) >= 0) {
+                                    loadInnerPage(parseInt(tst_cur_page));
+                                }
+                                break;
+                            }
+                        }
+                    }
+
+                    var sub_nodes = sections[i].getElementsByTagName("sub");
+                    if(sub_nodes.length > 0){
+                        for(var s = 0; s < sub_nodes.length; s++){
+                            var tr = document.createElement("tr");
+                            table.appendChild(tr);
+
+                            var td = document.createElement("td");
+                            td.innerHTML = sub_nodes[s].getAttribute("name");
+                            td.className = "sub-pane";
+                            td.setAttribute("section", sections[i].getAttribute("name"));
+                            td.id = sub_nodes[s].id;
+                            if(active_id && sub_nodes[s].id == active_id){
+                                td.className += " active";
+                            }
+                            tr.appendChild(td);
+
+                            //get all input field for the sub section
+                            var input_nodes = sub_nodes[s].childNodes;
+                            for(var k = 0; k < input_nodes.length; k++){
+                                try{
+                                    input_nodes[k].setAttribute("tstpagestyleclass", sub_nodes[s].id);
+                                }catch(e){
+                                    //ignore irrelevant node
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            setTimeout("updateNavButtons()", 500);
+        }
+
+        function updateNavButtons(){
+            form.setAttribute("target", "_parent");
+            /*window.frames['iframe'].contentDocument.getElementById("cancelButton").onmousedown = function(){
+                //cancelEntry();
+                window.top.location="/people/new_person_type"
+            }*/
+        }
+
+        function checkCurPos(){
+
+            form =  window.frames['iframe'].contentDocument.getElementById("new_person_name");
+            var cur_page = document.getElementById("iframe").contentWindow.tstCurrentPage;
+            if(form){
+                var cur_input_id = jQuery(form).find("[touchscreeninputid='" + cur_page + "']").attr("tstpagestyleclass");
+                if(cur_input_id){
+                    var sub_node = document.getElementById(cur_input_id);
+                    var parent_node = document.getElementById(sub_node.getAttribute("section"));
+                    parent_node.style.color = "black";
+                    highlight(sub_node);
+                }
+            }
+        }
+
+        function highlight(node){
+            var nodes = document.getElementsByClassName("sub-pane");
+            var section = node.getAttribute("section");
+            for(var j in nodes){
+                if(jQuery(nodes[j]).attr("section") == section){
+                    nodes[j].className = "sub-pane current";
+                }else {
+                    nodes[j].className = "sub-pane";
+                }
+            }
+
+            node.className += " active";
+            node.setAttribute('visited', "true");
+            if( !node.getAttribute('tstcurrentpage')) {
+                node.setAttribute('tstcurrentpage', document.getElementById("iframe").contentWindow.tstCurrentPage);
+            }
+        }
+
+        function loadInnerPage(pos){
+
+           document.getElementById("iframe").contentWindow.gotoPage(pos);
+
+        }
+
+        setTimeout("setup()", 500);
+
+        interval = window.setInterval(function(){
+            checkCurPos();
+        }, 350);
+
+        window.onerror = function (errorMsg, url, lineNumber) {
+            //alert('Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber);
+            if(errorMsg.match("iframe")){
+              window.top.location.reload();   
+            }
+          
+        }
+    </script>

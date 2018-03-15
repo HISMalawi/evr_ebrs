@@ -1,0 +1,69 @@
+<script type="text/javascript" src="assets/showSubMenu.js"></script>
+
+<div id="default" style="width: 100%; height: 400px; text-align: center; vertical-align: top;">
+
+<% if @folders.include?("View Requests") %>
+
+    <div class="button child_menu manage_requests_child" onclick="window.location = '/view_requests'" tag=0 title="View Requests">
+      <table style="text-align: left;">
+        <tr>
+          <td rowspan="2">
+            <img src="<%= @icoFolder %>" height="60"/>
+          </td>
+          <td style="height: 30px;">
+            View Requests
+          </td>
+        </tr>
+      </table>
+    </div>
+
+<% end %>
+<% if @folders.include?("Lost/damage cases") %>
+
+    <div class="button child_menu manage_requests_child" onclick="window.location = '/person/lost_and_damaged_cases'" tag=0 title="View Requests">
+      <table style="text-align: left;">
+        <tr>
+          <td rowspan="2">
+            <img src="<%= @icoFolder %>" height="60"/>
+          </td>
+          <td style="height: 30px;">
+            Lost/damaged cases
+          </td>
+        </tr>
+      </table>
+    </div>
+
+<% end %>
+<% if @folders.include?("Amendments") %>
+
+    <div class="button child_menu manage_requests_child" onclick="window.location = '/person/ammendment_cases'" tag=0 title="View Requests">
+      <table style="text-align: left;">
+        <tr>
+          <td rowspan="2">
+            <img src="<%= @icoFolder %>" height="60"/>
+          </td>
+          <td style="height: 30px;">
+            Amendments
+          </td>
+        </tr>
+      </table>
+    </div>
+
+<% end %>
+<% if @folders.include?("Amendments") %>
+
+    <div class="button child_menu manage_requests_child" onclick="window.location = '/person/rejected_ammendment_cases'" tag=0 title="View Requests">
+      <table style="text-align: left;">
+        <tr>
+          <td rowspan="2">
+            <img src="<%= @icoFolder %>" height="60"/>
+          </td>
+          <td style="height: 30px;">
+            Rejected fron HQ
+          </td>
+        </tr>
+      </table>
+    </div>
+
+<% end %>
+</div>

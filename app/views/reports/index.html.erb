@@ -1,0 +1,82 @@
+<style>
+  .count{
+      color: black;
+      font-size: 13px;
+      font-weight: bold;
+  }
+</style>
+<script type="text/javascript" src="/assets/showSubMenu.js"></script>
+
+<div id="default" style="width: 100%; height: 400px; text-align: center; vertical-align: top;">
+
+ <% if @folders.include?("Birth Report") %>
+
+			<div class="button child_menu manage_cases "
+                 onmousedown = "window.location = '/reports/births_report' "
+                 tag=0 title="View Complete Cases">
+				<table style="text-align: left;">
+					<tr>
+						<td rowspan="2">
+						  <img src="<%= @icoFolder %>" height="60"/>  <br />
+                          <span class="count"></span>
+						</td>
+						<td style="height: 30px;">
+						  Births Report
+						</td>
+					</tr>
+					<tr>
+						<td style="font-size: 11px; font-style: italic;">
+						  Births within a specific time range
+						</td>
+					</tr>
+				</table>
+			</div>
+
+			     
+ <% end %>
+ <% if @folders.include?("Manage Users")%>
+ 			<div class="button child_menu manage_cases "
+                 onmousedown = "window.location = '/reports/report_date_range?target_action=/user_audit_trail' "
+                 tag=0 title="View Complete Cases">
+				<table style="text-align: left;">
+					<tr>
+						<td rowspan="2">
+						  <img src="<%= @icoFolder %>" height="60"/>  <br />
+                          <span class="count"></span>
+						</td>
+						<td style="height: 30px;">
+						  User audits
+						</td>
+					</tr>
+					<tr>
+						<td style="font-size: 11px; font-style: italic;">
+						  Births within a specific time range
+						</td>
+					</tr>
+				</table>
+			</div>
+
+ <%end%>
+
+      <div class="button child_menu manage_cases "
+           onmousedown = "window.location = '/reports/report_date_range?target_action=/dispatch_note' "
+           tag=0 title="View Dispatches">
+        <table style="text-align: left;">
+          <tr>
+            <td rowspan="2">
+              <img src="<%= @icoFolder %>" height="60"/>  <br />
+              <span class="count"></span>
+            </td>
+            <td style="height: 30px;">
+              Dispatch Notes
+            </td>
+          </tr>
+          <tr>
+            <td style="font-size: 11px; font-style: italic;">
+              Dispatch batches from HQ
+            </td>
+          </tr>
+        </table>
+      </div>
+
+</div>

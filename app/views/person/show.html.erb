@@ -1,0 +1,563 @@
+<!doctype html>
+<html xmlns="http://www.w3.org/1999/html">
+<head>
+  <title>eBRS&nbsp;<%=application_mode.upcase%></title>
+  <%= stylesheet_link_tag 'application', media: 'all', 'styles' => true %>
+  <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
+  <%= csrf_meta_tags %>
+
+  <% @targeturl = session['list_url']%>
+  <style>
+
+  .record td {
+    font-size: 18px;
+    font-style: italic;
+    color: #000;
+  }
+
+  .record td strong {
+    font-size: 14px;
+    font-style: normal;
+    color: #3465a4;
+  }
+
+  fieldset {
+    margin: 20px;
+    border-radius: 5px;
+    border: 1px solid #3465a4;
+    padding: 20px;
+  }
+
+  legend {
+    font-size: 18px;
+    font-weight: normal;
+    color: #3465a4;
+  }
+
+  .blank {
+    font-size:20px;
+    color: #9F6000;
+    background-color: #FEEFB3;
+  }
+  #status{
+    background: green;
+    width: 80%;
+    height: 3%;
+    margin-top: 0.5%;
+    text-align: center;
+    font-size: 120%;
+    padding: 0.4em;
+    color: #FFFFFF;
+    border-radius: 50%;
+    margin-left: 1.5%;
+  }
+  #footerButtons{
+    margin-right: 0px !important;
+  }
+
+  #comment_popoup{
+      width: 45%;
+      height: 50%;
+      position: absolute;;
+      left: 25%;
+      top: 20%;
+      background: #eeeeef;
+      border-radius: 2%;
+      color: black;
+      box-shadow: 5px 5px 2px #888888;
+      visibility: hidden;
+  }
+  #title{
+      width: 98%;
+      margin:auto;
+      margin-top: 0.8%;
+      background: #345d8c;
+      font-size: 150%;
+      font-weight: bold;
+      color: #FFFFFF;
+      text-align: center;
+      padding-top: 2%;
+      padding-bottom: 2%;
+      border-top-right-radius: 7%;
+      border-top-left-radius: 7%;
+      border-bottom: 2px solid #d9d8d7;
+  }
+  #comment{
+      width: 98%;
+      height: 50%;
+      overflow-y: scroll;
+  }
+  #comment ul{
+      list-style-type: none;
+  }
+  #comment ul > li{
+      display: block;
+      background: #FFFFFF;
+      width:92%;
+      padding: 1.5%;
+      margin: auto;
+      margin-top: 0%;
+      border-radius: 3%;
+      padding-left: 2.5%;
+      border: 1px solid #d9d8d7;
+  }
+  #button{
+      width: 100%;
+      text-align: center;
+      padding: 5%;
+  }
+
+ #trace-tbl td{
+    border: 1px solid #d3d3d3;
+    padding: 5px !important;
+ }
+#trace-row td{
+    font-size: 0.8 !important;
+}
+
+</style>
+  </head>
+  <body>
+  <div id="comment_popoup">
+    <div id="title">Record Comments</div>
+    <div id="comment">
+
+    </div>
+    <div id="button"><button class="blue" onclick="dismissComment()">Ok</button></div>
+  </div>
+  <div id="trace-btn"
+       class="btn btn-primary blue"
+       style="position: absolute; top: 11%; right: 5.2%;cursor: pointer;padding: 5px;"
+       onclick="ajaxTrace()"
+  > Trace</div>
+
+  <table width="92%;" style="margin: auto;border: 1px solid gray;padding: 0px;">
+
+
+    <% @record.each do |group, children| %>
+
+        <% r = 0 %>
+
+        <tr>
+          <td valign="top" style="font-size: 18px; text-align: left; padding: 10px;padding-top: 0px; background-color: lightsteelblue;
+                  border-bottom: 1px solid #ccc;">
+            <%= group %>
+          </td>
+        </tr>
+        <tr>
+          <td>
+
+
+            <table class="record" width="100%" cellpadding="10" cellspacing="0">
+
+              <% children.each do |child| %>
+
+                  <% kids = child.keys %>
+
+                  <tr>
+
+                    <% (0..(kids.length - 1)).each do |i| %>
+
+                        <td align="right" style="border-right: 1px solid #eee; <%= (r < children.length - 1 ? "border-bottom: 1px solid #eee" : "") %>">
+                          <% unless kids[i].kind_of?(Array) %>
+                              <strong style="color: #3465a4;;"><%= kids[i].html_safe %></strong>
+                          <% else %>
+                              <% if  kids[i].second == "mandatory" %>
+                                  <strong style="color: #3465a4;;"><%= kids[i].first %><span style='color: red;'> *</span></strong>
+                              <% elsif  kids[i].second == "sub" %>
+                                  <strong style="color:#3465a4;;"><%= kids[i].first %><br /><span style='color: grey;font-size: smaller; font-style: italic;'>(<%= (child[kids[i]] == "Yes" ? "Registered after 42 days of birth" : "Registered within 42 days of birth") rescue nil %>)</span>
+                              <% end %>
+                          <% end %>
+                        </td>
+
+                        <td style="<%= (r < children.length - 1 ? "border-bottom: 1px solid #eee" : "") %>" id='<%= kids[i].kind_of?(Array) ? "#{group.gsub(" ", "_").downcase}_#{kids[i].first.gsub(" ", "_").downcase}" : "#{group.gsub(" ", "_").downcase}_#{kids[i].gsub(" ", "_").downcase}" %>'>
+                          <%= child[kids[i]] rescue nil %>
+                        </td>
+
+                    <% end %>
+
+                    <% ((kids.length)..2).each do |i| %>
+
+                        <td align="right" style="border-right: 1px solid #eee; <%= (r < children.length - 1 ? "border-bottom: 1px solid #eee" : "") %>">
+                          <strong>&nbsp;</strong>
+                        </td>
+                        <td style="<%= (r < children.length - 1 ? "border-bottom: 1px solid #eee" : "") %>">
+                          &nbsp;
+                        </td>
+
+                    <% end %>
+
+                  </tr>
+
+                  <% r += 1 %>
+
+              <% end %>
+
+            </table>
+
+          </td>
+        </tr>
+
+    <% end %>
+
+    <tr>
+      <td style="border-top: 1px solid #ccc;">
+        &nbsp;
+      </td>
+    </tr>
+
+  </table>
+
+  <fieldset>
+
+  </fieldset>
+
+  <% display = SETTINGS['enable_role_privileges'] == false ? '' : 'none'
+  %>
+<div id="footerButtons" style="position: absolute; right:170px; width: 75%; bottom: 16.5px;padding: 0px;border: ">
+  <table style="padding: 0px; float: right;">
+    <tr>
+    <% if @comments.present? %>
+    <td id="View Comments" style="display:<%= display%>;">
+      <button id="btnViewComment"
+                 class="blue"
+                 style=""
+                 onclick="viewComment()">View Comments</button>
+
+    </td>
+    <%end%>
+    <td id="Reject" style="display:<%= display%>;">
+        <button id="btnReject"
+                class="red"
+                style=""
+                onclick="rejectComments()">Reject</button>
+    </td>
+      <td id="Check Completeness" style="display:<%= display%>;">
+        <button id="btnComplete"
+                class="blue"
+                style=""
+                onclick="checkCompleteness()">Check Completeness</button>
+      </td>
+    <td id="Approve" style="display:<%= display%>;">
+        <button id="btnApprove"
+                class="green"
+                style=""
+                onclick="approveComments();">Approve</button>
+    </td>
+
+    <td id="Re-print" style="display:<%= display%>;">
+        <button id="btnAmmend"
+                class="green"
+                style=""
+                onclick="reprint();">Re-print</button>
+    </td>
+    <td id="Amend" style="display:<%= display%>;">
+        <button id="btnAmend"
+                class="green"
+                style=""
+                onclick="amend();">Amend</button>
+    </td>
+
+    <td id="Send Request to HQ" style="display:<%= display%>;">
+        <button id="btnApprove-Reprint"
+                class="green"
+                style=""
+                onclick="approveReprint();">Send Request to HQ</button>
+    </td>
+      <td id="Mark Pendingdddd" style="display:none">
+        <button style="display:none" id="btnQuery"
+                class="blue"
+                style=""
+                onclick="pending();">Mark Pending</button>
+      </td>
+
+ </tr>
+</table>
+</div>
+
+  <shield id="shieldd"
+          onclick="$('#shieldd, #trace-div').hide(); "
+          style="position: absolute; display: none; top: 0px; left: 0px; width: 300vh; height: 300vh; background: black; opacity: 0.3;">
+  </shield>
+
+  <div id="trace-div" style="position: absolute; height: 60vh; overflow-y: auto; display: none; top: 18%; left: 10%;width: 65%;background: white;border: 2px solid gray;border-radius: 5px;">
+
+    <table id="trace-tbl" style="width: 100%;color: darkslategray;">
+        <caption style="background: ghostwhite;padding: 6px; font-size: 1.2em;">
+          Record Movements
+        </caption>
+      <tr >
+        <td style="width: 1%;background: lightsteelblue;font-weight: bold;">Site</td>
+        <td style="width: 14%;background: lightsteelblue;font-weight: bold;">Date</td>
+        <td style="width: 12%;background: lightsteelblue;font-weight: bold;">Time</td>
+        <td style="width: 20%;background: lightsteelblue;font-weight: bold;">User</td>
+        <td style="width: 30%;background: lightsteelblue;font-weight: bold;">Action Taken</td>
+        <td style="background: lightsteelblue;font-weight: bold;">Comments</td>
+      </tr>
+
+      <% (@trace_data || []).each do |data|%>
+          <tr class="trace-row">
+            <td><%= data['site']%></td>
+            <td><%= data['date']%></td>
+            <td><%= data['time']%></td>
+            <td><%= data['user'].html_safe%></td>
+            <td><%= data['action']%></td>
+            <td><%= data['comment']%></td>
+          </tr>
+      <% end %>
+    </table>
+  </div>
+  <script>
+    var status ="<%=@status%>";
+
+    <% (@actions || []).each do |action|
+      next if (SETTINGS['enable_role_privileges'] == false)
+    %>
+        if(__$('<%= action['button_name']%>')) {
+            __$('<%= action['button_name']%>').style.display = 'table-cell';
+        }
+    <% end %>
+      summaryHash = {};
+
+      <% @summaryHash.each do |k, v|%>
+        summaryHash['<%= k%>'] = '<%= (v.gsub(/\s+/, ' ').strip rescue v)%>';
+      <% end %>
+
+      function checkCompleteness() {
+          $("#comment_popoup").css("visibility","hidden");
+          link = "window.location='/complete_case_comment/<%= params[:id] %>'";
+          <%
+          if ['DC-ACTIVE'].include?(@person_status) %>
+            link = "window.location='/complete_case_comment/<%= params[:id] %>'";
+          <% end %>
+
+          submitSummary(link);
+      }
+
+      function amend(){
+          var action = "window.location = '/person/ammend_case?id=<%=params[:id]%>&next_path=<%=params[:next_path]%>'";
+
+          showMsgForAction("Click \"Yes\" to amend record", action, "200px", "Amendment action", null);
+          
+      }
+
+      function approveReprint(){
+
+         var action = "window.location = '/person/approve_reprint_request?id=<%=params[:id]%>&reason="+"<%=@status%>".replace("DC-","").replace("-REJECTED","")+"&next_path=<%=params[:next_path]%>'";
+         
+          showMsgForAction("Send request to HQ", action, "200px", "Amendment action", null);
+      }
+
+      function submitSummary(action) {
+
+
+          var msg = "";
+
+          var parent = document.createElement("div");
+
+          var div = document.createElement("div");
+          div.style.height = "380px";
+          div.style.width = "800px";
+
+          parent.appendChild(div);
+
+          var table = document.createElement("table");
+          table.style.width = "100%";
+
+          div.appendChild(table);
+
+          var tbody = document.createElement("tbody");
+
+          table.appendChild(tbody);
+
+          var keys = Object.keys(summaryHash);
+
+          for (var i = 0; i < keys.length; i++) {
+              var tr = document.createElement("tr");
+              tbody.appendChild(tr);
+              var td1 = document.createElement("th");
+              td1.align = "right";
+              td1.innerHTML = keys[i];
+              tr.appendChild(td1);
+              var td2 = document.createElement("td");
+              td2.innerHTML = ":";
+              tr.appendChild(td2);
+              var td3 = document.createElement("td");
+              var label =  summaryHash[keys[i]];
+
+
+              label = (label.trim) ? label.trim() : label.replace(/^\s+/,'');
+              if (label == '')
+                  label = "<span class='blank'>N/A</span>"
+              if (keys[i].match(/weight/i))
+                  label = label + " Kg"
+
+
+              td3.innerHTML = label;
+              tr.appendChild(td3);
+
+          }
+
+          var pos = checkCtrl(parent);
+
+          msg = parent.innerHTML;
+
+          hideSpinner();
+
+          var no_action = "window.location='/pending_case_comment/<%= params[:id] %>'";
+          showMsgForAction(msg, action, "600px", "Data Completeness Check", no_action);
+
+          __$("cancel").style.visibility="visible";
+
+          var btnYes = __$("yes");
+          btnYes.className = "green"
+          btnYes.innerHTML = "Complete"
+
+          var btnNo = __$("no");
+          btnNo.innerHTML = "Mark Pending";
+          btnNo.className = "red"
+          btnNo.style.width = "auto";
+          btnNo.style.marginRight = "10%";
+          btnNo.style.marginLeft = "10%";
+
+      }
+
+      function viewComment(hide){
+
+          var msg = "";
+
+          var parent = document.createElement("div");
+
+          var div = document.createElement("div");
+          div.style.height = "300px";
+          div.style.width = "700px";
+
+          jQuery('.extra-btn').remove();
+
+          var table = document.createElement("table");
+          table.style.width = "100%";
+
+          div.appendChild(table);
+
+          var tbody = document.createElement("tbody");
+
+          table.appendChild(tbody);
+
+          jQuery.ajax({
+              type: "GET",
+              url: "/comments/<%= @person.id %>",
+              data: "",
+              success: function(result){
+                  hideSpinner();
+                  $("#comment").empty();
+                  if (result.trim() == "<ul></ul>")
+                  {
+                      if(!hide) {
+                          $("#comment").append("<ul><li>No comment(s) as of now </li></ul>");
+                      }else{
+                          $("#button").hide();
+                          $("#title").html('Select reason for ammendment');
+                      }
+                  }else {
+                      $("#comment").append(result);
+                  }
+
+              }
+
+          });
+          parent.appendChild(div);
+          msg = parent.innerHTML;
+
+          hideSpinner();
+          $("#comment_popoup").css("visibility","visible");
+      }
+
+      function dismissComment(){
+          $("#comment_popoup").css("visibility","hidden");
+      }
+
+     function approve(){
+         jQuery.ajax({
+             type: "GET",
+             url: "/ajax_approve/<%= @person.id %>",
+             success: function(next_path){
+
+                window.location = next_path;
+             },
+             error: function(){
+                 //alert("Something went wrong! server may be down");
+                 console.log("Something went wrong! server may be down")
+             }
+
+         });
+     }
+
+      function pending(){
+          window.location = "/pending_case_comment/<%= params[:id] %>";
+      }
+
+      function reject(){
+          window.location = "/reject_case_comment/<%= params[:id] %>";
+      }
+
+      function rejectComments(){
+          viewComment();
+          var okBtn = __$('button').getElementsByClassName('blue')[0].cloneNode();
+          okBtn.className = "extra-btn red";
+          okBtn.innerHTML = "Reject";
+          okBtn.onclick = function(){ reject()}
+
+          __$('button').getElementsByClassName('blue')[0].parentNode.appendChild(okBtn);
+
+      }
+
+      function approveComments(){
+          viewComment();
+          var okBtn = __$('button').getElementsByClassName('blue')[0].cloneNode();
+          okBtn.className = "extra-btn green";
+          okBtn.innerHTML = "Approve";
+          okBtn.onclick = function(){ approve()}
+
+          __$('button').getElementsByClassName('blue')[0].parentNode.appendChild(okBtn);
+      }
+
+      function reprint(){
+          window.location = '/person/reprint_case?person_id=<%= params[:id]%>';
+      }
+
+      function duplicateComments(){
+          viewComment();
+          var okBtn = __$('button').getElementsByClassName('blue')[0].cloneNode();
+          __$("title").innerHTML = "Record is "+ (status=="DC-DUPLICATE"? 'exact': 'potential') +" duplicate with <%=@results.count%> record(s)";
+          var table = "<table align='center' id='printers' style='width:98%;margin:auto'>"+
+                      "</tr><% @results.each do |result| %><tr>"+
+                      "<td><%= PersonBirthDetail.find_by_person_id(result['_id'].to_i).district_id_number rescue ''%></td>"+
+                      "<td style='text-align: left; padding-left:50px;''><%=result['_source']['content'] %></td>"+
+                      "</tr><% end %></table>"
+          jQuery(table).insertAfter(__$("title"));
+          __$("comment").style.height ="150px"
+          okBtn = __$("button")
+          okBtn.onclick = function(){ duplicate('System')}
+
+          __$('button').getElementsByClassName('blue')[0].parentNode.appendChild(okBtn);
+      }
+
+      function duplicate(operation){
+          window.location = '/resolve_duplicate?id=<%= params[:id]%>&decision=POTENTIAL DUPLICATE&'+
+                            'nextstatus=<%=@status%>&reason=System Captured record as duplicate&next_path=/view_cases'
+      }
+
+      function showSpinner(){}
+
+    function ajaxTrace(){
+        $("#shieldd, #trace-div").show();
+    }
+
+  </script>
+  <% if @status == "DC-POTENTIAL DUPLICATE" || @status == "DC-DUPLICATE" %>
+    <script type="text/javascript">
+          duplicateComments();
+    </script>
+  <%end%>
+  </body>
+
