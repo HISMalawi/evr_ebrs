@@ -1216,7 +1216,7 @@ class PersonController < ApplicationController
     end
     
     if data.present?
-      render text: data.compact.uniq.join("\n") and return
+      render text: ("<li>" + data.compact.uniq.join("</li><li>") + "</li>") and return
     else
       render text: "" and return
     end
@@ -1232,7 +1232,7 @@ class PersonController < ApplicationController
     end
     
     if data.present?
-      render text: data.compact.uniq.join("\n") and return
+      render text: ("<li>" + data.compact.uniq.join("</li><li>") + "</li>") and return
     else
       render text: "" and return
     end
@@ -1257,8 +1257,7 @@ class PersonController < ApplicationController
     
 
     if data.present?
-      render text: data.compact.uniq.join("\n") and return
-      
+      render text: ("<li>" + data.compact.uniq.join("</li><li>") + "</li>") and return
     else
       render text: "" and return
     end
@@ -1277,7 +1276,7 @@ class PersonController < ApplicationController
     end
     
     if data.present?
-      render text: data.compact.uniq.join("\n") and return
+      render text: ("<li>" + data.compact.uniq.join("</li><li>") + "</li>") and return
     else
       render text: "" and return
     end
@@ -1302,7 +1301,7 @@ class PersonController < ApplicationController
     end
     
     if data.present?
-      render text: data.compact.uniq.join("\n") and return
+      render text: ("<li>" + data.compact.uniq.join("</li><li>") + "</li>") and return
     else
       render text: "" and return
     end
@@ -1329,7 +1328,7 @@ class PersonController < ApplicationController
   end
   
   if data.present?
-    render text: data.compact.uniq.join("\n") and return
+    render text: ("<li>" + data.compact.uniq.join("</li><li>") + "</li>") and return
   else
     render text: "" and return
   end
@@ -2066,6 +2065,50 @@ class PersonController < ApplicationController
 
     render :text => {'person_id' => params['person_id'],
                      'result' => result}.to_json
+  end
+
+  def barcode_scan
+
+    barcode = params[:value]
+    render :layout => {}.to_json and return if barcode.blank?
+
+    result = []
+    if SETTINGS['scan_from_dde'].to_s == "true"
+
+      link  = ""
+    elsif SETTINGS['scan_from_remote'].to_s == "true"
+
+      link = "#{SETTINGS['remote_url']}/people/demographics_remote"
+      hash = { "person" => {"patient" => {"identifiers" => {"National id" => barcode}}}}
+
+      data  = JSON.parse(RestClient.post(link, hash.to_json, :content_type => "application/json")) rescue []
+
+      data  = [data] if data.class != Array && !data.blank?
+
+      (data || []).each do |d|
+        d = d['person']
+        result << [{
+                       "first_name"           => d['names']['given_name'],
+                       "last_name"            => d['names']['family_name'],
+                       "middle_name"          => d['names']['family_name2'],
+                       "gender"               => d['gender'],
+                       "birth_date"           => "#{d['birth_day']}/#{d['birth_month']}/#{d['birth_year']}".to_date.to_s,
+                       "home_district"        => d['addresses']['address2'],
+                       "home_ta"              => d['addresses']['county_district'],
+                       "home_village"         => d['addresses']['neighborhood_cell'],
+                       "current_district"     => d['addresses']['state_province'],
+                       "current_ta"           => d['addresses'][''],
+                       "current_village"      => d['addresses']['city_village'],
+                       "citizenship"          => "Malawi",
+                       "country_of_residence" => "Malawi",
+                       "cell_phone_number"    => (!d['attributes']['cell_phone_number'].blank? &&
+                                                      d['attributes']['cell_phone_number'].match(/\d+/) ?
+                                                      d['attributes']['cell_phone_number'] : nil  )
+                   }]
+      end
+    end
+
+    render :text => result.to_json
   end
   
 end

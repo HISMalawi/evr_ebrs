@@ -3,6 +3,38 @@ body{
     margin-top: 0px !important;
 }
 </style>
+
+<script>
+    var barcode_scan_url = "/person/barcode_scan";
+
+    function checkBarcode(id){
+        var value = __$("touchscreenInput" + tstCurrentPage).value;
+
+        if (value.match(/\$$/) && value.length > 1){
+            value = value.replace("$", '');
+            __$("touchscreenInput" + tstCurrentPage).value = value;
+
+            jQuery.ajax({
+                url: barcode_scan_url + "?value=" + value,
+                success: function(result){
+
+                    data = JSON.parse(result);
+                    console.log(data[0]);
+                },
+                error: function(){
+
+                    __$("touchscreenInput" + tstCurrentPage).value = "";
+                    showMessage("Something Went Wrong!");
+                }
+            })
+        }
+
+        setTimeout(function(){checkBarcode(id)}, 500);
+    }
+
+
+</script>
+
 <%= form_for @person, :url => '/person/create', :method => :post do |f| %>
 
     <%= f.hidden_field :_rev rescue "" %>
@@ -15,12 +47,60 @@ body{
     <input id="person_duplicate" name="person[duplicate]" type="hidden" />
     <input id="person_is_exact_duplicate" type="hidden" name="person[is_exact_duplicate]" >
 
-
     <section name="Mother Details">
+      <sub id="mother_details" name="Mother Details">
+          <%= text_field_tag(:mother_barcode, nil,
+                             :id => "mother_barcode",
+                             :optional => "true",
+                             :helpText => "Scan mother barcode",
+                             :tstPageStyleClass => "NoKeyboard",
+                             :tt_onLoad => "__$('keyboard').style.display = 'none'; checkBarcode('mother_barcode')") %>
 
-        <%= (f.text_field :last_name,
-        :helpText => "Surname",
-        :ajaxURL => "/get_last_names") %>
+          <%= text_field_tag("person[mother][first_name]", nil,
+                             :id => "mother_first_name",
+                             :helpText => "Mother first name"
+                            ) %>
+
+          <%= text_field_tag("person[mother][last_name]", nil,
+                             :id => "mother_last_name",
+                             :helpText => "Mother surname"
+              ) %>
+
+          <%= text_field_tag("person[mother][maiden_name]", nil,
+                             :id => "mother_maiden_name",
+                             :optional => true,
+                             :helpText => "Mother maiden name"
+              ) %>
+
+          <%= text_field_tag("person[mother][birthdate]", nil,
+                             :id => "mother_birthdate",
+                             :field_type => "date",
+                             :tt_onLoad => "__$('Unknown').style.display = 'none'",
+                             :helpText => "Mother birthdate"
+              ) %>
+
+          <%= text_field_tag("person[mother][birthdate]", nil,
+                             :id => "mother_birthdate2",
+                             :field_type => "date",
+                             :helpText => "Mother birthdate"
+              ) %>
+        </sub>
+
+        <sub id="mother_home_address" name="Mother Home Address">
+            <%= text_field_tag("person[mother][citizenship]", nil,
+                               :id => "mother_citizenship",
+                               :helpText => "Mother citizenship",
+                               :ajaxURL  => "/search_by_nationality"
+                ) %>
+
+            <%= text_field_tag("person[mother][residential_country]", nil,
+                               :id => "mother_residential_country",
+                               :helpText => "Mother Residential Country",
+                               :ajaxURL  => "/search_by_nationality"
+                ) %>
+
+        </sub>
+
 
     </section>
 

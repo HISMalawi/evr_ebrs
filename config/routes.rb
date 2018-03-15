@@ -80,6 +80,8 @@ Rails.application.routes.draw do
 
   get 'person/new_split'
 
+  get 'person/barcode_scan'
+
   post 'person/create'
 
   get '/search_similar_record' => "person#search_similar_record"
