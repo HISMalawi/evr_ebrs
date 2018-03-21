@@ -70,15 +70,15 @@
                            :id => "child_gender",
                            :helpText => "Gender"
             %>
-
-            <%= text_field_tag("person[child][birth_weight]", nil,
-                               :id => "child_birth_weight",
+        </sub>
+        <sub id="birth_details" name="Birth Details">
+            <%= text_field_tag("person[birth_weight]", nil,
+                               :id => "person_birth_weight",
                                :field_type => "decimal",
                                :helpText => "Birth weight (in kilograms)",
                                :optional => true
                 ) %>
-        </sub>
-        <sub id="birth_details" name="Birth Details">
+
             <%= select_tag "person[type_of_birth]", options_for_select([ "Single", "Twin", "Second Twin", "Triplet", "Second Triplet", "Third Triplet", "Other" ], nil),
                            :id => "person_type_of_birth",
                            :helpText => "Type of Birth"
@@ -136,15 +136,33 @@
 
         <sub id="mother_home_address" name="Mother Home Address">
             <%= text_field_tag("person[mother][citizenship]", nil,
-                               :id => "mother_citizenship",
-                               :helpText => "Mother citizenship",
+                               :id => "person_mother_citizenship",
+                               :helpText => "Nationality",
                                :ajaxURL  => "/search_by_nationality"
                 ) %>
 
             <%= text_field_tag("person[mother][residential_country]", nil,
-                               :id => "mother_residential_country",
-                               :helpText => "Mother Residential Country",
+                               :id => "person_mother_local_residential_country",
+                               :helpText => "Country of Residence",
                                :ajaxURL  => "/search_by_nationality"
+                ) %>
+
+            <%= text_field_tag("person[mother][current_district]", nil,
+                               :id => "person_mother_current_district",
+                               :helpText => "District",
+                               :ajaxURL  => "/search_by_district"
+                ) %>
+
+            <%= text_field_tag("person[mother][current_ta]", nil,
+                               :id => "person_mother_current_district",
+                               :helpText => "T/A or Area of Residence",
+                               :ajaxURL  => "/search_by_ta"
+                ) %>
+
+            <%= text_field_tag("person[mother][current_village]", nil,
+                               :id => "person_mother_current_village",
+                               :helpText => "Village/Town",
+                               :ajaxURL  => "/search_by_village"
                 ) %>
 
         </sub>
