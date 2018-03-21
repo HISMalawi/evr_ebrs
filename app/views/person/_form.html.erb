@@ -1,36 +1,36 @@
 <style>
-body{
-    margin-top: 0px !important;
-}
+    body{
+        margin-top: 0px !important;
+    }
 </style>
 
 <script>
-    var barcode_scan_url = "/person/barcode_scan";
+	var barcode_scan_url = "/person/barcode_scan";
 
-    function checkBarcode(id){
-        var value = __$("touchscreenInput" + tstCurrentPage).value;
+	function checkBarcode(id){
+		var value = __$("touchscreenInput" + tstCurrentPage).value;
 
-        if (value.match(/\$$/) && value.length > 1){
-            value = value.replace("$", '');
-            __$("touchscreenInput" + tstCurrentPage).value = value;
+		if (value.match(/\$$/) && value.length > 1){
+			value = value.replace("$", '');
+			__$("touchscreenInput" + tstCurrentPage).value = value;
 
-            jQuery.ajax({
-                url: barcode_scan_url + "?value=" + value,
-                success: function(result){
+			jQuery.ajax({
+				url: barcode_scan_url + "?value=" + value,
+				success: function(result){
 
-                    data = JSON.parse(result);
-                    console.log(data[0]);
-                },
-                error: function(){
+					data = JSON.parse(result);
+					console.log(data[0]);
+				},
+				error: function(){
 
-                    __$("touchscreenInput" + tstCurrentPage).value = "";
-                    showMessage("Something Went Wrong!");
-                }
-            })
-        }
+					__$("touchscreenInput" + tstCurrentPage).value = "";
+					showMessage("Something Went Wrong!");
+				}
+			})
+		}
 
-        setTimeout(function(){checkBarcode(id)}, 500);
-    }
+		setTimeout(function(){checkBarcode(id)}, 500);
+	}
 
 
 </script>
@@ -47,43 +47,92 @@ body{
     <input id="person_duplicate" name="person[duplicate]" type="hidden" />
     <input id="person_is_exact_duplicate" type="hidden" name="person[is_exact_duplicate]" >
 
+    <section name="Child Details">
+        <sub id="child_details" name="Child Details">
+            <%= text_field_tag("person[child][first_name]", nil,
+                               :id => "child_first_name",
+                               :helpText => "First name"
+                ) %>
+
+            <%= text_field_tag("person[child][last_name]", nil,
+                               :id => "child_last_name",
+                               :helpText => "Last name"
+                ) %>
+
+            <%= text_field_tag("person[child][birthdate]", nil,
+                               :id => "child_birthdate",
+                               :field_type => "date",
+                               :tt_onLoad => "__$('Unknown').style.display = 'none'",
+                               :helpText => "Birthdate"
+                ) %>
+
+            <%= select_tag "person[child][gender]", options_for_select([ "Male", "Female" ], nil),
+                           :id => "child_gender",
+                           :helpText => "Gender"
+            %>
+
+            <%= text_field_tag("person[child][birth_weight]", nil,
+                               :id => "child_birth_weight",
+                               :field_type => "decimal",
+                               :helpText => "Birth weight (in kilograms)",
+                               :optional => true
+                ) %>
+
+            <%= select_tag "person[type_of_birth]", options_for_select([ "Single", "Twin", "Second Twin", "Triplet", "Second Triplet", "Third Triplet", "Other" ], nil),
+                           :id => "person_type_of_birth",
+                           :helpText => "Type of Birth"
+            %>
+
+            <%= select_tag "person[parents_married_to_each_other]", options_for_select([ "Yes", "No" ], nil),
+                           :id => "person_parents_married_to_each_other",
+                           :helpText => "Are the Parents Married to each Other?"
+            %>
+
+            <%= select_tag "person[court_order_attached]", options_for_select([ "Yes", "No" ], nil),
+                           :id => "person_court_order_attached",
+                           :helpText => "Court order attached?"
+            %>
+
+        </sub>
+    </section>
+
     <section name="Mother Details">
-      <sub id="mother_details" name="Mother Details">
-          <%= text_field_tag(:mother_barcode, nil,
-                             :id => "mother_barcode",
-                             :optional => "true",
-                             :helpText => "Scan mother barcode",
-                             :tstPageStyleClass => "NoKeyboard",
-                             :tt_onLoad => "__$('keyboard').style.display = 'none'; checkBarcode('mother_barcode')") %>
+        <sub id="mother_details" name="Mother Details">
+            <%= text_field_tag(:mother_barcode, nil,
+                               :id => "mother_barcode",
+                               :optional => "true",
+                               :helpText => "Scan mother barcode",
+                               :tstPageStyleClass => "NoKeyboard",
+                               :tt_onLoad => "__$('keyboard').style.display = 'none'; checkBarcode('mother_barcode')") %>
 
-          <%= text_field_tag("person[mother][first_name]", nil,
-                             :id => "mother_first_name",
-                             :helpText => "Mother first name"
-                            ) %>
+            <%= text_field_tag("person[mother][first_name]", nil,
+                               :id => "mother_first_name",
+                               :helpText => "Mother first name"
+                ) %>
 
-          <%= text_field_tag("person[mother][last_name]", nil,
-                             :id => "mother_last_name",
-                             :helpText => "Mother surname"
-              ) %>
+            <%= text_field_tag("person[mother][last_name]", nil,
+                               :id => "mother_last_name",
+                               :helpText => "Mother surname"
+                ) %>
 
-          <%= text_field_tag("person[mother][maiden_name]", nil,
-                             :id => "mother_maiden_name",
-                             :optional => true,
-                             :helpText => "Mother maiden name"
-              ) %>
+            <%= text_field_tag("person[mother][maiden_name]", nil,
+                               :id => "mother_maiden_name",
+                               :optional => true,
+                               :helpText => "Mother maiden name"
+                ) %>
 
-          <%= text_field_tag("person[mother][birthdate]", nil,
-                             :id => "mother_birthdate",
-                             :field_type => "date",
-                             :tt_onLoad => "__$('Unknown').style.display = 'none'",
-                             :helpText => "Mother birthdate"
-              ) %>
+            <%= text_field_tag("person[mother][birthdate]", nil,
+                               :id => "mother_birthdate",
+                               :field_type => "date",
+                               :tt_onLoad => "__$('Unknown').style.display = 'none'",
+                               :helpText => "Mother birthdate"
+                ) %>
 
-          <%= text_field_tag("person[mother][birthdate]", nil,
-                             :id => "mother_birthdate2",
-                             :field_type => "date",
-                             :helpText => "Mother birthdate"
-              ) %>
+            <%= text_field_tag("person[mother][birthdate]", nil,
+                               :id => "mother_birthdate2",
+                               :field_type => "date",
+                               :helpText => "Mother birthdate"
+                ) %>
         </sub>
 
         <sub id="mother_home_address" name="Mother Home Address">
@@ -101,17 +150,59 @@ body{
 
         </sub>
 
+        <sub id="mother_physical_address" name="Mother Physical Address">
+            <%= text_field_tag("person[mother][citizenship]", nil,
+                               :id => "mother_citizenship",
+                               :helpText => "Mother citizenship",
+                               :ajaxURL  => "/search_by_nationality"
+                ) %>
+
+            <%= text_field_tag("person[mother][residential_country]", nil,
+                               :id => "mother_residential_country",
+                               :helpText => "Mother Residential Country",
+                               :ajaxURL  => "/search_by_nationality"
+                ) %>
+
+        </sub>
 
     </section>
 
     <section name="Father Details">
+        <%= text_field_tag(:mother_barcode, nil,
+                           :id => "mother_barcode",
+                           :optional => "true",
+                           :helpText => "Scan mother barcode",
+                           :tstPageStyleClass => "NoKeyboard",
+                           :tt_onLoad => "__$('keyboard').style.display = 'none'; checkBarcode('mother_barcode')") %>
 
+        <%= text_field_tag("person[mother][first_name]", nil,
+                           :id => "mother_first_name",
+                           :helpText => "Mother first name"
+            ) %>
 
-    </section>
+        <%= text_field_tag("person[mother][last_name]", nil,
+                           :id => "mother_last_name",
+                           :helpText => "Mother surname"
+            ) %>
 
-    <section name="Child Details">
+        <%= text_field_tag("person[mother][maiden_name]", nil,
+                           :id => "mother_maiden_name",
+                           :optional => true,
+                           :helpText => "Mother maiden name"
+            ) %>
 
+        <%= text_field_tag("person[mother][birthdate]", nil,
+                           :id => "mother_birthdate",
+                           :field_type => "date",
+                           :tt_onLoad => "__$('Unknown').style.display = 'none'",
+                           :helpText => "Mother birthdate"
+            ) %>
 
+        <%= text_field_tag("person[mother][birthdate]", nil,
+                           :id => "mother_birthdate2",
+                           :field_type => "date",
+                           :helpText => "Mother birthdate"
+            ) %>
     </section>
 
     <section name="Informant Details">
