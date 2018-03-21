@@ -77,7 +77,8 @@
                                :helpText => "Birth weight (in kilograms)",
                                :optional => true
                 ) %>
-
+        </sub>
+        <sub id="birth_details" name="Birth Details">
             <%= select_tag "person[type_of_birth]", options_for_select([ "Single", "Twin", "Second Twin", "Triplet", "Second Triplet", "Third Triplet", "Other" ], nil),
                            :id => "person_type_of_birth",
                            :helpText => "Type of Birth"
@@ -93,6 +94,10 @@
                            :helpText => "Court order attached?"
             %>
 
+            <%= select_tag "person[parents_signed]", options_for_select([ "Yes", "No" ], nil),
+                           :id => "person_parents_signed",
+                           :helpText => "Parents signed?"
+            %>
         </sub>
     </section>
 
@@ -125,12 +130,6 @@
                                :id => "mother_birthdate",
                                :field_type => "date",
                                :tt_onLoad => "__$('Unknown').style.display = 'none'",
-                               :helpText => "Mother birthdate"
-                ) %>
-
-            <%= text_field_tag("person[mother][birthdate]", nil,
-                               :id => "mother_birthdate2",
-                               :field_type => "date",
                                :helpText => "Mother birthdate"
                 ) %>
         </sub>
