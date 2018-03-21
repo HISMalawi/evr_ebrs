@@ -132,9 +132,7 @@
                                :tt_onLoad => "__$('Unknown').style.display = 'none'",
                                :helpText => "Mother birthdate"
                 ) %>
-        </sub>
 
-        <sub id="mother_home_address" name="Mother Home Address">
             <%= text_field_tag("person[mother][citizenship]", nil,
                                :id => "person_mother_citizenship",
                                :helpText => "Nationality",
@@ -147,6 +145,29 @@
                                :ajaxURL  => "/search_by_nationality"
                 ) %>
 
+        </sub>
+
+        <sub id="mother_home_address" name="Mother Home Address">
+            <%= text_field_tag("person[mother][home_district]", nil,
+                               :id => "person_mother_home_district",
+                               :helpText => "District",
+                               :ajaxURL  => "/search_by_district"
+                ) %>
+
+            <%= text_field_tag("person[mother][home_ta]", nil,
+                               :id => "person_mother_home_district",
+                               :helpText => "T/A or Area of Residence",
+                               :ajaxURL  => "/search_by_ta"
+                ) %>
+
+            <%= text_field_tag("person[mother][home_village]", nil,
+                               :id => "person_mother_home_village",
+                               :helpText => "Village/Town",
+                               :ajaxURL  => "/search_by_village"
+                ) %>
+        </sub>
+
+        <sub id="mother_physical_address" name="Mother Physical Address">
             <%= text_field_tag("person[mother][current_district]", nil,
                                :id => "person_mother_current_district",
                                :helpText => "District",
@@ -164,22 +185,6 @@
                                :helpText => "Village/Town",
                                :ajaxURL  => "/search_by_village"
                 ) %>
-
-        </sub>
-
-        <sub id="mother_physical_address" name="Mother Physical Address">
-            <%= text_field_tag("person[mother][citizenship]", nil,
-                               :id => "mother_citizenship",
-                               :helpText => "Mother citizenship",
-                               :ajaxURL  => "/search_by_nationality"
-                ) %>
-
-            <%= text_field_tag("person[mother][residential_country]", nil,
-                               :id => "mother_residential_country",
-                               :helpText => "Mother Residential Country",
-                               :ajaxURL  => "/search_by_nationality"
-                ) %>
-
         </sub>
 
     </section>
