@@ -71,7 +71,7 @@
                            :helpText => "Gender"
             %>
         </sub>
-        <sub id="birth_details" name="Birth Details">
+        <sub id="child_birth_details" name="Child Birth Details">
             <%= text_field_tag("person[birth_weight]", nil,
                                :id => "person_birth_weight",
                                :field_type => "decimal",
@@ -135,13 +135,13 @@
 
             <%= text_field_tag("person[mother][citizenship]", nil,
                                :id => "person_mother_citizenship",
-                               :helpText => "Nationality",
+                               :helpText => "Mother's Nationality",
                                :ajaxURL  => "/search_by_nationality"
                 ) %>
 
             <%= text_field_tag("person[mother][residential_country]", nil,
                                :id => "person_mother_local_residential_country",
-                               :helpText => "Country of Residence",
+                               :helpText => "Mother's Country of Residence",
                                :ajaxURL  => "/search_by_nationality"
                 ) %>
 
@@ -150,19 +150,19 @@
         <sub id="mother_home_address" name="Mother Home Address">
             <%= text_field_tag("person[mother][home_district]", nil,
                                :id => "person_mother_home_district",
-                               :helpText => "District",
+                               :helpText => "Mother Home District",
                                :ajaxURL  => "/search_by_district"
                 ) %>
 
             <%= text_field_tag("person[mother][home_ta]", nil,
                                :id => "person_mother_home_district",
-                               :helpText => "T/A or Area of Residence",
+                               :helpText => "Mother Home T/A or Area of Residence",
                                :ajaxURL  => "/search_by_ta"
                 ) %>
 
             <%= text_field_tag("person[mother][home_village]", nil,
                                :id => "person_mother_home_village",
-                               :helpText => "Village/Town",
+                               :helpText => "Mother Home Village/Town",
                                :ajaxURL  => "/search_by_village"
                 ) %>
         </sub>
@@ -170,65 +170,119 @@
         <sub id="mother_physical_address" name="Mother Physical Address">
             <%= text_field_tag("person[mother][current_district]", nil,
                                :id => "person_mother_current_district",
-                               :helpText => "District",
+                               :helpText => "Mother Current District",
                                :ajaxURL  => "/search_by_district"
                 ) %>
 
             <%= text_field_tag("person[mother][current_ta]", nil,
                                :id => "person_mother_current_district",
-                               :helpText => "T/A or Area of Residence",
+                               :helpText => "Mother Current T/A or Area of Residence",
                                :ajaxURL  => "/search_by_ta"
                 ) %>
 
             <%= text_field_tag("person[mother][current_village]", nil,
                                :id => "person_mother_current_village",
-                               :helpText => "Village/Town",
+                               :helpText => "Mother Current Village/Town",
                                :ajaxURL  => "/search_by_village"
                 ) %>
+        </sub>
+
+        <sub id="mother_birth_details" name="Mother Birth Details">
+            <%= text_field_tag("gestation_at_birth", nil,
+                               :id => "person_gestation_at_birth",
+                               :helpText => "Gestation age at birth in weeks",
+                               :optional => true
+                ) %>
+
+            <%= text_field_tag("number_of_prenatal_visits", nil,
+                               :id => "person_number_of_prenatal_visits",
+                               :helpText => "Number of prenatal visits",
+                               :optional => true
+                ) %>
+
+            <%= text_field_tag("month_prenatal_care_started", nil,
+                               :id => "person_month_prenatal_care_started",
+                               :helpText => "Month of pregnancy prenatal care started",
+                               :optional => true
+                ) %>
+
+            <%= select_tag "person[mode_of_delivery]", options_for_select([ "SVD", "Vaccum Extraction", "Breech",
+                                                                            "Forceps", "Caesarean Section" ], nil),
+                           :id => "person_mode_of_delivery",
+                           :helpText => "Mode of Delivery"
+            %>
+
+            <%= text_field_tag("number_of_children_born_alive_inclusive", nil,
+                               :id => "person_number_of_children_born_alive_inclusive",
+                               :helpText => "Number of children born to mother, including this child"
+                ) %>
+
+            <%= text_field_tag("number_of_children_born_still_alive", nil,
+                               :id => "person_number_of_children_born_still_alive",
+                               :helpText => "Number of children born to mother, and still living"
+                ) %>
+
+            <%= select_tag "person[level_of_education]", options_for_select([ "None", "Primary", "Secondary",
+                                                                              "Higher Education" ], nil),
+                           :id => "person_level_of_education",
+                           :helpText => "Completed level of education"
+            %>
+
         </sub>
 
     </section>
 
     <section name="Father Details">
-        <%= text_field_tag(:mother_barcode, nil,
-                           :id => "mother_barcode",
-                           :optional => "true",
-                           :helpText => "Scan mother barcode",
-                           :tstPageStyleClass => "NoKeyboard",
-                           :tt_onLoad => "__$('keyboard').style.display = 'none'; checkBarcode('mother_barcode')") %>
+        <sub id="father_details" name="Father Details">
+            <%= text_field_tag(:mother_barcode, nil,
+                               :id => "mother_barcode",
+                               :optional => "true",
+                               :helpText => "Scan mother barcode",
+                               :tstPageStyleClass => "NoKeyboard",
+                               :tt_onLoad => "__$('keyboard').style.display = 'none'; checkBarcode('mother_barcode')") %>
 
-        <%= text_field_tag("person[mother][first_name]", nil,
-                           :id => "mother_first_name",
-                           :helpText => "Mother first name"
-            ) %>
+            <%= text_field_tag("person[mother][first_name]", nil,
+                               :id => "mother_first_name",
+                               :helpText => "Mother first name"
+                ) %>
 
-        <%= text_field_tag("person[mother][last_name]", nil,
-                           :id => "mother_last_name",
-                           :helpText => "Mother surname"
-            ) %>
+            <%= text_field_tag("person[mother][last_name]", nil,
+                               :id => "mother_last_name",
+                               :helpText => "Mother surname"
+                ) %>
 
-        <%= text_field_tag("person[mother][maiden_name]", nil,
-                           :id => "mother_maiden_name",
-                           :optional => true,
-                           :helpText => "Mother maiden name"
-            ) %>
+            <%= text_field_tag("person[mother][maiden_name]", nil,
+                               :id => "mother_maiden_name",
+                               :optional => true,
+                               :helpText => "Mother maiden name"
+                ) %>
 
-        <%= text_field_tag("person[mother][birthdate]", nil,
-                           :id => "mother_birthdate",
-                           :field_type => "date",
-                           :tt_onLoad => "__$('Unknown').style.display = 'none'",
-                           :helpText => "Mother birthdate"
-            ) %>
+            <%= text_field_tag("person[mother][birthdate]", nil,
+                               :id => "mother_birthdate",
+                               :field_type => "date",
+                               :tt_onLoad => "__$('Unknown').style.display = 'none'",
+                               :helpText => "Mother birthdate"
+                ) %>
 
-        <%= text_field_tag("person[mother][birthdate]", nil,
-                           :id => "mother_birthdate2",
-                           :field_type => "date",
-                           :helpText => "Mother birthdate"
-            ) %>
+            <%= text_field_tag("person[mother][birthdate]", nil,
+                               :id => "mother_birthdate2",
+                               :field_type => "date",
+                               :helpText => "Mother birthdate"
+                ) %>
+        </sub>
     </section>
 
     <section name="Informant Details">
-
+        <sub id="informant_details" name="Informant Details">
+            <%= select_tag "informant_same_as_mother", options_for_select([ "Yes", "No" ], nil),
+                           :id => "informant_same_as_mother",
+                           :helpText => "Mother is informant?"
+            %>
+            <%= select_tag "informant_same_as_father", options_for_select([ "Yes", "No" ], nil),
+                           :id => "informant_same_as_father",
+                           :helpText => "Father is informant?"
+            %>
+        </sub>
     </section>
 <% end %>
 
