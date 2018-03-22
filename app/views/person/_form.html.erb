@@ -367,6 +367,20 @@
                                :ajaxURL  => "/search_by_nationality"
                 ) %>
         </sub>
+        <sub id="informant_relationship_details" name="Informant Relationship Details">
+            <%= select_tag "person[informant][relationship_to_person]", options_for_select([ 'Grandmother/Grandfather',
+                                                                                             'Brother/Sister', 'Aunt/Uncle',
+                                                                                             'Mother-in-law/Father-in-law',
+                                                                                             'Sister-in-marriage/Brother-in-marriage',
+                                                                                             'Other'], nil),
+                           :id => "person_informant_relationship_to_person",
+                           :helpText => "Informant relationship to person"
+            %>
+            <%= text_field_tag("person[informant][other_informant_relationship_to_person]", nil,
+                               :id => "other_informant_relationship_to_person",
+                               :helpText => "Specifiy informant relationship",
+                ) %>
+        </sub>
         <sub id="informant_home_address" name="Informant Home Address">
             <%= text_field_tag("person[informant][home_district]", nil,
                                :id => "person_informant_home_district",
@@ -409,6 +423,26 @@
                                :helpText => "Informant Current Village/Town",
                                :ajaxURL  => "/search_by_village"
                 ) %>
+        </sub>
+        <sub id="informant_extra_details" name="Informant Extra Details">
+            <%= text_field_tag("person[informant][phone_number]", nil,
+                               :id => "person_informant_phone_number",
+                               :helpText => "Please enter a valid phone number"
+                ) %>
+            <%= select_tag "person[form_signed]", options_for_select([ "Yes", "No" ], nil),
+                           :id => "form_signed",
+                           :helpText => "Has the form been signed by the Informant?"
+            %>
+            <%= text_field_tag("date_reported", nil,
+                               :id => "informant_report_date",
+                               :field_type => "date",
+                               :tt_onLoad => "__$('Unknown').style.display = 'none'",
+                               :helpText => "Date of Reporting"
+                ) %>
+            <%= select_tag "copy_mother_name", options_for_select([ "Yes", "No" ], nil),
+                           :id => "person_copy_mother_name",
+                           :helpText => "Replace person Surname with Mother Maiden Surname?"
+            %>
         </sub>
     </section>
 <% end %>
