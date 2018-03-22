@@ -238,40 +238,91 @@
 
     <section name="Father Details">
         <sub id="father_details" name="Father Details">
-            <%= text_field_tag(:mother_barcode, nil,
-                               :id => "mother_barcode",
+            <%= text_field_tag(:father_barcode, nil,
+                               :id => "father_barcode",
                                :optional => "true",
-                               :helpText => "Scan mother barcode",
+                               :helpText => "Scan father barcode",
                                :tstPageStyleClass => "NoKeyboard",
                                :tt_onLoad => "__$('keyboard').style.display = 'none'; checkBarcode('mother_barcode')") %>
 
-            <%= text_field_tag("person[mother][first_name]", nil,
-                               :id => "mother_first_name",
-                               :helpText => "Mother first name"
+            <%= text_field_tag("person[father][first_name]", nil,
+                               :id => "father_first_name",
+                               :helpText => "Father first name"
                 ) %>
 
-            <%= text_field_tag("person[mother][last_name]", nil,
-                               :id => "mother_last_name",
-                               :helpText => "Mother surname"
+            <%= text_field_tag("person[father][last_name]", nil,
+                               :id => "father_last_name",
+                               :helpText => "Father surname"
                 ) %>
 
-            <%= text_field_tag("person[mother][maiden_name]", nil,
-                               :id => "mother_maiden_name",
+            <%= text_field_tag("person[father][maiden_name]", nil,
+                               :id => "father_maiden_name",
                                :optional => true,
-                               :helpText => "Mother maiden name"
+                               :helpText => "Father maiden name"
                 ) %>
 
-            <%= text_field_tag("person[mother][birthdate]", nil,
-                               :id => "mother_birthdate",
+            <%= text_field_tag("person[father][birthdate]", nil,
+                               :id => "father_birthdate",
                                :field_type => "date",
                                :tt_onLoad => "__$('Unknown').style.display = 'none'",
-                               :helpText => "Mother birthdate"
+                               :helpText => "Father birthdate"
                 ) %>
 
-            <%= text_field_tag("person[mother][birthdate]", nil,
-                               :id => "mother_birthdate2",
-                               :field_type => "date",
-                               :helpText => "Mother birthdate"
+            <%= text_field_tag("person[father][citizenship]", nil,
+                               :id => "person_father_citizenship",
+                               :helpText => "Father's Nationality",
+                               :ajaxURL  => "/search_by_nationality"
+                ) %>
+
+            <%= text_field_tag("person[father][residential_country]", nil,
+                               :id => "person_father_local_residential_country",
+                               :helpText => "Father's Country of Residence",
+                               :ajaxURL  => "/search_by_nationality"
+                ) %>
+
+        </sub>
+
+        <sub id="father_home_address" name="Father Home Address">
+            <%= text_field_tag("person[father][home_district]", nil,
+                               :id => "person_father_home_district",
+                               :helpText => "Father Home District",
+                               :ajaxURL  => "/search_by_district",
+                               :tt_onUnload =>"__$('person_father_home_ta').setAttribute('ajaxURL','/search_by_ta?district='+__$('touchscreenInput' + tstCurrentPage).value)"
+                ) %>
+
+            <%= text_field_tag("person[father][home_ta]", nil,
+                               :id => "person_father_home_ta",
+                               :helpText => "Father Home T/A or Area of Residence",
+                               :tt_onUnload =>"__$('person_father_home_village').setAttribute('ajaxURL','/search_by_village?ta='+__$('touchscreenInput' + tstCurrentPage).value+'&district='+__$('person_father_home_district').value)"
+                ) %>
+
+            <%= text_field_tag("person[father][home_village]", nil,
+                               :id => "person_father_home_village",
+                               :helpText => "Father Home Village/Town",
+                               :ajaxURL  => "/search_by_village"
+                ) %>
+        </sub>
+
+        <sub id="father_physical_address" name="Father Physical Address">
+            <%= text_field_tag("person[father][current_district]", nil,
+                               :id => "person_father_current_district",
+                               :helpText => "Father Current District",
+                               :ajaxURL  => "/search_by_district",
+                               :tt_onUnload =>"__$('person_father_current_ta').setAttribute('ajaxURL','/search_by_ta?district='+__$('touchscreenInput' + tstCurrentPage).value)"
+                ) %>
+
+            <%= text_field_tag("person[father][current_ta]", nil,
+                               :id => "person_father_current_ta",
+                               :helpText => "Father Current T/A or Area of Residence",
+                               :tt_onUnload =>"__$('person_father_current_village').setAttribute('ajaxURL','/search_by_village?ta='+__$('touchscreenInput' + tstCurrentPage).value+'&district='+__$('person_father_current_district').value)"
+
+
+                ) %>
+
+            <%= text_field_tag("person[father][current_village]", nil,
+                               :id => "person_father_current_village",
+                               :helpText => "Father Current Village/Town",
+                               :ajaxURL  => "/search_by_village"
                 ) %>
         </sub>
     </section>
@@ -286,6 +337,78 @@
                            :id => "informant_same_as_father",
                            :helpText => "Father is informant?"
             %>
+
+            <%= text_field_tag("person[informant][first_name]", nil,
+                               :id => "informant_first_name",
+                               :helpText => "Informant first name"
+                ) %>
+
+            <%= text_field_tag("person[informant][last_name]", nil,
+                               :id => "informant_last_name",
+                               :helpText => "Informant surname"
+                ) %>
+
+            <%= text_field_tag("person[informant][birthdate]", nil,
+                               :id => "informant_birthdate",
+                               :field_type => "date",
+                               :tt_onLoad => "__$('Unknown').style.display = 'none'",
+                               :helpText => "Informant birthdate"
+                ) %>
+
+            <%= text_field_tag("person[informant][citizenship]", nil,
+                               :id => "person_informant_citizenship",
+                               :helpText => "Informant's Nationality",
+                               :ajaxURL  => "/search_by_nationality"
+                ) %>
+
+            <%= text_field_tag("person[informant][residential_country]", nil,
+                               :id => "person_informant_local_residential_country",
+                               :helpText => "Informant's Country of Residence",
+                               :ajaxURL  => "/search_by_nationality"
+                ) %>
+        </sub>
+        <sub id="informant_home_address" name="Informant Home Address">
+            <%= text_field_tag("person[informant][home_district]", nil,
+                               :id => "person_informant_home_district",
+                               :helpText => "Informant Home District",
+                               :ajaxURL  => "/search_by_district",
+                               :tt_onUnload =>"__$('person_informant_home_ta').setAttribute('ajaxURL','/search_by_ta?district='+__$('touchscreenInput' + tstCurrentPage).value)"
+                ) %>
+
+            <%= text_field_tag("person[informant][home_ta]", nil,
+                               :id => "person_informant_home_ta",
+                               :helpText => "Informant Home T/A or Area of Residence",
+                               :tt_onUnload =>"__$('person_informant_home_village').setAttribute('ajaxURL','/search_by_village?ta='+__$('touchscreenInput' + tstCurrentPage).value+'&district='+__$('person_informant_home_district').value)"
+                ) %>
+
+            <%= text_field_tag("person[informant][home_village]", nil,
+                               :id => "person_informant_home_village",
+                               :helpText => "Informant Home Village/Town",
+                               :ajaxURL  => "/search_by_village"
+                ) %>
+        </sub>
+
+        <sub id="informant_physical_address" name="Informant Physical Address">
+            <%= text_field_tag("person[informant][current_district]", nil,
+                               :id => "person_informant_current_district",
+                               :helpText => "Informant Current District",
+                               :ajaxURL  => "/search_by_district",
+                               :tt_onUnload =>"__$('person_informant_current_ta').setAttribute('ajaxURL','/search_by_ta?district='+__$('touchscreenInput' + tstCurrentPage).value)"
+                ) %>
+
+            <%= text_field_tag("person[informant][current_ta]", nil,
+                               :id => "person_informant_current_ta",
+                               :helpText => "Informant Current T/A or Area of Residence",
+                               :tt_onUnload =>"__$('person_informant_current_village').setAttribute('ajaxURL','/search_by_village?ta='+__$('touchscreenInput' + tstCurrentPage).value+'&district='+__$('person_informant_current_district').value)"
+
+
+                ) %>
+
+            <%= text_field_tag("person[informant][current_village]", nil,
+                               :id => "person_informant_current_village",
+                               :helpText => "Informant Current Village/Town",
+                               :ajaxURL  => "/search_by_village"
+                ) %>
         </sub>
     </section>
 <% end %>
