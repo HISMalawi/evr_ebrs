@@ -38,8 +38,9 @@
 <%= form_for @person, :url => '/person/create', :method => :post do |f| %>
 
     <%= f.hidden_field :_rev rescue "" %>
-    <%= f.hidden_field :place_of_birth, :value => Location.where(location_id: SETTINGS['location_id']).first.name %>
-    <%= f.hidden_field :hospital_of_birth, :value => "#{Location.current.name}"  %>
+
+    <input type="hidden" name="person[place_of_birth]" value="<%= Location.where(location_id: SETTINGS['location_id']).first.name  %>"/>
+    <input type="hidden" name="person[hospital_of_birth]" value="<%= Location.current.name %>" />
 
     <input type="hidden" id="person_birth_district" name="person[birth_district]" value="<%=Location.find(Location.current.parent_location).name%>">
     <input id="person_relationship" name="person[relationship]" value="normal" type="hidden"/>
@@ -49,24 +50,24 @@
 
     <section name="Child Details">
         <sub id="child_details" name="Child Details">
-            <%= text_field_tag("person[child][first_name]", nil,
+            <%= text_field_tag("person[first_name]", nil,
                                :id => "child_first_name",
                                :helpText => "First name"
                 ) %>
 
-            <%= text_field_tag("person[child][last_name]", nil,
+            <%= text_field_tag("person[last_name]", nil,
                                :id => "child_last_name",
                                :helpText => "Last name"
                 ) %>
 
-            <%= text_field_tag("person[child][birthdate]", nil,
+            <%= text_field_tag("person[birthdate]", nil,
                                :id => "child_birthdate",
                                :field_type => "date",
                                :tt_onLoad => "__$('Unknown').style.display = 'none'",
                                :helpText => "Birthdate"
                 ) %>
 
-            <%= select_tag "person[child][gender]", options_for_select([ "Male", "Female" ], nil),
+            <%= select_tag "person[gender]", options_for_select([ "Male", "Female" ], nil),
                            :id => "child_gender",
                            :helpText => "Gender"
             %>
@@ -142,7 +143,7 @@
             <%= text_field_tag("person[mother][residential_country]", nil,
                                :id => "person_mother_local_residential_country",
                                :helpText => "Mother's Country of Residence",
-                               :ajaxURL  => "/search_by_nationality"
+                               :ajaxURL  => "/search_by_country"
                 ) %>
 
         </sub>
@@ -277,7 +278,7 @@
             <%= text_field_tag("person[father][residential_country]", nil,
                                :id => "person_father_local_residential_country",
                                :helpText => "Father's Country of Residence",
-                               :ajaxURL  => "/search_by_nationality"
+                               :ajaxURL  => "/search_by_country"
                 ) %>
 
         </sub>
@@ -364,7 +365,7 @@
             <%= text_field_tag("person[informant][residential_country]", nil,
                                :id => "person_informant_local_residential_country",
                                :helpText => "Informant's Country of Residence",
-                               :ajaxURL  => "/search_by_nationality"
+                               :ajaxURL  => "/search_by_country"
                 ) %>
         </sub>
         <sub id="informant_relationship_details" name="Informant Relationship Details">

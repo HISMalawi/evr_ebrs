@@ -456,10 +456,10 @@ module Lib
   end
   
   def self.is_twin_or_triplet(type_of_birth)
-    if type_of_birth == "Second Twin" 
-      return true 
-    elsif type_of_birth == "Second Triplet" 
-      return true 
+    if type_of_birth == "Second Twin"
+      return true
+    elsif type_of_birth == "Second Triplet"
+      return true
     elsif type_of_birth == "Third Triplet"
       return true
     else
