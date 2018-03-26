@@ -17,13 +17,10 @@
 			jQuery.ajax({
 				url: barcode_scan_url + "?value=" + value,
 				success: function(result){
-
 					data = JSON.parse(result);
-					console.log('success');
-					//console.log(data[0]);
+					console.log(data[0]);
 				},
 				error: function(){
-
 					__$("touchscreenInput" + tstCurrentPage).value = "";
 					showMessage("Something Went Wrong!");
 				}
@@ -76,14 +73,24 @@
         <sub id="child_birth_details" name="Child Birth Details">
             <%= text_field_tag("person[birth_weight]", nil,
                                :id => "person_birth_weight",
-                               :field_type => "decimal",
+                               :placeholder => '0.000',
+                               :tstPageStyleClass => "NumberWithUnknown",
+                               :field_type => 'number',
+                               :regex => '^\d+\.\d{3}$',
+                               :regex_message => "Expecting baby weight to have 3 decimal places.\nAppend zero(s) to the weight for you?",
+                               :absolute_min => 0.7,
+                               :absolute_max => 6,
+                               :max => 4,
+                               :min => 2.5,
                                :helpText => "Birth weight (in kilograms)",
                                :optional => true
                 ) %>
 
             <%= select_tag "person[type_of_birth]", options_for_select([ "Single", "Twin", "Second Twin", "Triplet", "Second Triplet", "Third Triplet", "Other" ], nil),
                            :id => "person_type_of_birth",
-                           :helpText => "Type of Birth"
+                           :helpText => "Type of Birth",
+                           :tstPageStyleClass => "NoKeyboard",
+                           :tt_onLoad => "__$('keyboard').style.display = 'none';"
             %>
 
             <%= select_tag "person[parents_married_to_each_other]", options_for_select([ "Yes", "No" ], nil),
@@ -197,18 +204,24 @@
             <%= text_field_tag("gestation_at_birth", nil,
                                :id => "person_gestation_at_birth",
                                :helpText => "Gestation age at birth in weeks",
+                               :tstPageStyleClass => "NumberWithUnknown",
+                               :field_type => 'number',
                                :optional => true
                 ) %>
 
             <%= text_field_tag("number_of_prenatal_visits", nil,
                                :id => "person_number_of_prenatal_visits",
                                :helpText => "Number of prenatal visits",
+                               :tstPageStyleClass => "NumberWithUnknown",
+                               :field_type => 'number',
                                :optional => true
                 ) %>
 
             <%= text_field_tag("month_prenatal_care_started", nil,
                                :id => "person_month_prenatal_care_started",
                                :helpText => "Month of pregnancy prenatal care started",
+                               :tstPageStyleClass => "NumberWithUnknown",
+                               :field_type => 'number',
                                :optional => true
                 ) %>
 
@@ -220,18 +233,24 @@
 
             <%= text_field_tag("number_of_children_born_alive_inclusive", nil,
                                :id => "person_number_of_children_born_alive_inclusive",
-                               :helpText => "Number of children born to mother, including this child"
+                               :helpText => "Number of children born to mother, including this child",
+                               :tstPageStyleClass => "NumberWithUnknown",
+                               :field_type => 'number'
                 ) %>
 
             <%= text_field_tag("number_of_children_born_still_alive", nil,
                                :id => "person_number_of_children_born_still_alive",
-                               :helpText => "Number of children born to mother, and still living"
+                               :helpText => "Number of children born to mother, and still living",
+                               :tstPageStyleClass => "NumberWithUnknown",
+                               :field_type => 'number'
                 ) %>
 
             <%= select_tag "person[level_of_education]", options_for_select([ "None", "Primary", "Secondary",
                                                                               "Higher Education" ], nil),
                            :id => "person_level_of_education",
-                           :helpText => "Completed level of education"
+                           :helpText => "Completed level of education",
+                           :tstPageStyleClass => "NumberWithUnknown",
+                           :field_type => 'number'
             %>
 
         </sub>
@@ -255,12 +274,6 @@
             <%= text_field_tag("person[father][last_name]", nil,
                                :id => "father_last_name",
                                :helpText => "Father surname"
-                ) %>
-
-            <%= text_field_tag("person[father][maiden_name]", nil,
-                               :id => "father_maiden_name",
-                               :optional => true,
-                               :helpText => "Father maiden name"
                 ) %>
 
             <%= text_field_tag("person[father][birthdate]", nil,
@@ -429,7 +442,9 @@
         <sub id="informant_extra_details" name="Informant Extra Details">
             <%= text_field_tag("person[informant][phone_number]", nil,
                                :id => "person_informant_phone_number",
-                               :helpText => "Please enter a valid phone number"
+                               :helpText => "Please enter a valid phone number",
+                               :tstPageStyleClass => "NumbersWithUnknown",
+                               :field_type => 'number'
                 ) %>
             <%= select_tag "person[form_signed]", options_for_select([ "Yes", "No" ], nil),
                            :id => "form_signed",
