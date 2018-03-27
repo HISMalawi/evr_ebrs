@@ -1,13 +1,15 @@
 <style>
     body{
         margin-top: 0px !important;
-    }
+    }   
 </style>
 
+<%= javascript_include_tag 'itable', 'data-turbolinks-track' => true %>
 <script>
 	var barcode_scan_url = "/person/barcode_scan";
 
 	function checkBarcode(id){
+		jQuery("#touchscreenInput" + tstCurrentPage).focus();
 		var value = __$("touchscreenInput" + tstCurrentPage).value;
 
 		if (value.match(/\$$/) && value.length > 1){
@@ -18,7 +20,11 @@
 				url: barcode_scan_url + "?value=" + value,
 				success: function(result){
 					data = JSON.parse(result);
-					console.log(data[0]);
+					jQuery(".inputFrameClass").css({
+						"height" : "25px"	
+					});
+
+					iTable.init(data[0], jQuery(".inputFrameClass").parent())
 				},
 				error: function(){
 					__$("touchscreenInput" + tstCurrentPage).value = "";
