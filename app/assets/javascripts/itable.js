@@ -55,11 +55,13 @@ iTable = {
 		thd8.innerHTML = 'Home Village';
 		thr.appendChild(thd8);
 
-		table.appendChild(th);
+		table.appendChild(thr);
 
 		for(var key in hash){
 			var tr  = document.createElement("tr");
-			tr.id = 'hello';
+			tr.style.left = '5px';
+			tr.id = hash[0]['first_name'] + '_' + hash[0]['last_name'] + '_' + key;
+			tr.setAttribute('onclick', getDataAndStore(hash));
 
 			var td1 = document.createElement("td");
 			td1.innerHTML  = parseInt(key) + 1;
@@ -103,4 +105,8 @@ iTable = {
 		parent.append(table);
 		return table;
 	}
+};
+
+function getDataAndStore(person_data) {
+	alert('hello '+person_data[0]['first_name']);
 }
