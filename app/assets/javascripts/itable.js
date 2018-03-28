@@ -13,21 +13,92 @@ sample = {
 	'home_village' : "Conforzi Estate Chipiloni Lines",
 	'last_name' : "Nampinga",
 	'middle_name' : null
-}
+};
 
 iTable = {
 	init: function(hash, parent){
 		var table = document.createElement("table");
-		
-		for(var k in hash){
+		table.style.border = '2px black solid';
+		table.style.width = '95%';
+
+		var thr = document.createElement("tr");
+
+		var thd1 = document.createElement("th");
+		thd1.innerHTML = 'Index';
+		thr.appendChild(thd1);
+
+		var thd2 = document.createElement("th");
+		thd2.innerHTML = 'First Name';
+		thr.appendChild(thd2);
+
+		var thd3 = document.createElement("th");
+		thd3.innerHTML = 'Last Name';
+		thr.appendChild(thd3);
+
+		var thd4 = document.createElement("th");
+		thd4.innerHTML = 'Gender';
+		thr.appendChild(thd4);
+
+		var thd5 = document.createElement("th");
+		thd5.innerHTML = 'Birthdate';
+		thr.appendChild(thd5);
+
+		var thd6 = document.createElement("th");
+		thd6.innerHTML = 'Home District';
+		thr.appendChild(thd6);
+
+		var thd7 = document.createElement("th");
+		thd7.innerHTML = 'Home TA';
+		thr.appendChild(thd7);
+
+		var thd8 = document.createElement("th");
+		thd8.innerHTML = 'Home Village';
+		thr.appendChild(thd8);
+
+		table.appendChild(th);
+
+		for(var key in hash){
 			var tr  = document.createElement("tr");
-			var td1 = document.createElement("td"); 
-			var td2 = document.createElement("td"); 
+			tr.id = 'hello';
 
-			td1.innerHTML  = k; td2.innerHTML  = hash[k];
-			tr.appendChild(td1); tr.appendChild(td2);
+			var td1 = document.createElement("td");
+			td1.innerHTML  = parseInt(key) + 1;
+			tr.appendChild(td1);
 
-			table.appendChild(tr);		
+			var td2 = document.createElement("td");
+			td2.innerHTML  = hash[0]['first_name'];
+			tr.appendChild(td2);
+
+			var td3 = document.createElement("td");
+			td3.innerHTML  = hash[0]['last_name'];
+			tr.appendChild(td3);
+
+			var td4 = document.createElement("td");
+			if("hash[0]['gender'] == 'F'") {
+				var gender = 'Female';
+			}else if("hash[0]['gender'] == 'F'") {
+				var gender = 'Male';
+			}
+			td4.innerHTML  = gender;
+			tr.appendChild(td4);
+
+			var td5 = document.createElement("td");
+			td5.innerHTML  = hash[0]['birth_date'];
+			tr.appendChild(td5);
+
+			var td6 = document.createElement("td");
+			td6.innerHTML  = hash[0]['home_district'];
+			tr.appendChild(td6);
+
+			var td7 = document.createElement("td");
+			td7.innerHTML  = hash[0]['home_ta'];
+			tr.appendChild(td7);
+
+			var td8 = document.createElement("td");
+			td8.innerHTML  = hash[0]['home_village'];
+			tr.appendChild(td8);
+
+			table.appendChild(tr);
 		}
 		parent.append(table);
 		return table;
