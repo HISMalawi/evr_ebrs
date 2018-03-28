@@ -21,6 +21,11 @@ iTable = {
 		table.style.border = '2px black solid';
 		table.style.width = '95%';
 
+		var caption = document.createElement("caption");
+		var number_of_records = hash.length;
+		caption.innerHTML = (number_of_records===1?number_of_records+' record found':number_of_records + ' records found');
+		table.appendChild(caption);
+
 		var thr = document.createElement("tr");
 
 		var thd1 = document.createElement("th");
