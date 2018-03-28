@@ -61,7 +61,9 @@ iTable = {
 			var tr  = document.createElement("tr");
 			tr.style.left = '5px';
 			tr.id = hash[0]['first_name'] + '_' + hash[0]['last_name'] + '_' + key;
-			tr.setAttribute('onclick', getDataAndStore(hash));
+			tr.onclick = function() {
+				getDataAndStore(hash);
+			};
 
 			var td1 = document.createElement("td");
 			td1.innerHTML  = parseInt(key) + 1;
@@ -107,6 +109,6 @@ iTable = {
 	}
 };
 
-function getDataAndStore(person_data) {
-	alert('hello '+person_data[0]['first_name']);
+function getDataAndStore(hash_params) {
+	alert('hello ');
 }
