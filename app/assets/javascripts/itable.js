@@ -154,7 +154,8 @@ iTable = {
 			var person_action_select_button_text = document.createTextNode("Select");
 			person_action_select_button.appendChild(person_action_select_button_text);
 			person_action_select_button.onclick = function() {
-				getDataAndStore(hash[0]);
+				var person_type = (hash[0]['gender']==='F')?'Mother':'Father';
+				getDataAndStore(hash[0], person_type);
 			};
 			person_action_td_row_td.appendChild(person_action_select_button);
 
@@ -173,7 +174,20 @@ iTable = {
 	}
 };
 
-function getDataAndStore(hash_params) {
+function getDataAndStore(hash_params, person_type) {
 	var person_details = hash_params;
-	return person_details;
+
+	var person_type_value = person_type.toLowerCase();
+	__$(person_type_value+'_first_name').value = person_details.first_name;
+	__$(person_type_value+'_last_name').value = person_details.last_name;
+	__$(person_type_value+'_birthdate').value = person_details.birth_date;
+	__$('person_'+person_type_value+'_citizenship').value = person_details.citizenship;
+	__$('person_'+person_type_value+'_local_residential_country').value = person_details.country_of_residence;
+	__$('person_'+person_type_value+'_home_district').value = person_details.home_district;
+	__$('person_'+person_type_value+'_home_ta').value = person_details.home_ta;
+	__$('person_'+person_type_value+'_home_village').value = person_details.home_village;
+	__$('person_'+person_type_value+'_current_district').value = person_details.current_district;
+	__$('person_'+person_type_value+'_current_ta').value = person_details.current_ta;
+	__$('person_'+person_type_value+'_current_village').value = person_details.current_village;
+	//return person_details;
 }
