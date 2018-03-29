@@ -174,5 +174,6 @@ iTable = {
 };
 
 function getDataAndStore(hash_params) {
-	console.log(JSON.parse(hash_params));
+	var person_details = hash_params;
+	return person_details;
 }
