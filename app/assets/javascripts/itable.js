@@ -190,4 +190,5 @@ function getDataAndStore(hash_params, person_type) {
 	__$('person_'+person_type_value+'_current_ta').value = person_details.current_ta;
 	__$('person_'+person_type_value+'_current_village').value = person_details.current_village;
 	//return person_details;
+
 }
