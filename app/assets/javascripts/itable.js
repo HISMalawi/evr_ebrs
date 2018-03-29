@@ -36,16 +36,19 @@ iTable = {
 			var person_header_td = document.createElement("td");
 			person_row.appendChild(person_header_td);
 
-			var person_header_td_row = document.createElement("tr");
-			person_header_td.appendChild(person_header_td_row);
+			var person_header_first_name_row = document.createElement("tr");
+			person_header_td.appendChild(person_header_first_name_row);
 
 			var person_header_first_name = document.createElement("td");
 			person_header_first_name.innerHTML = 'First Name';
-			person_header_td_row.appendChild(person_header_first_name);
+			person_header_first_name_row.appendChild(person_header_first_name);
+
+			var person_header_last_name_row = document.createElement("tr");
+			person_header_td.appendChild(person_header_last_name_row);
 
 			var person_header_last_name = document.createElement("td");
 			person_header_last_name.innerHTML = 'Last Name';
-			person_header_td_row.appendChild(person_header_last_name);
+			person_header_last_name_row.appendChild(person_header_last_name);
 
 			// Create column 2 to hold Table Description
 			var person_details_td = document.createElement("td");
