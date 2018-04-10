@@ -111,7 +111,7 @@ iTable = {
 			person_details_td.appendChild(person_details_gender_row);
 
 			var person_details_gender = document.createElement("td");
-			person_details_gender.innerHTML = hash[0]['gender'];
+			person_details_gender.innerHTML = (hash[0]['gender']==='F')?'Female':'Male';
 			person_details_gender_row.appendChild(person_details_gender);
 
 			// -- row 4
@@ -153,17 +153,25 @@ iTable = {
 			var person_action_select_button = document.createElement("button");
 			var person_action_select_button_text = document.createTextNode("Select");
 			person_action_select_button.appendChild(person_action_select_button_text);
-			person_action_select_button.onclick = function() {
+			person_action_select_button.onmousedown = function() {
 				var person_type = (hash[0]['gender']==='F')?'Mother':'Father';
 				getDataAndStore(hash[0], person_type);
+				if(person_type === 'Mother') {
+					console.log('Mother');
+					document.getElementById("person_gestation_at_birth").scrollIntoView(true);
+				} else if(person_type === 'Father') {
+					console.log('Father');
+					document.getElementById("informant_details").scrollIntoView(true);
+				}
 			};
 			person_action_td_row_td.appendChild(person_action_select_button);
 
 			var person_action_select_and_edit_button = document.createElement("button");
 			var person_action_select_and_edit_button_text = document.createTextNode("Select & Edit");
 			person_action_select_and_edit_button.appendChild(person_action_select_and_edit_button_text);
-			person_action_select_and_edit_button.onclick = function() {
-				getDataAndStore(hash[0]);
+			person_action_select_and_edit_button.onmousedown = function() {
+				var person_type = (hash[0]['gender']==='F')?'Mother':'Father';
+				getDataAndStore(hash[0], person_type);
 			};
 			person_action_td_row_td.appendChild(person_action_select_and_edit_button);
 
@@ -175,20 +183,23 @@ iTable = {
 };
 
 function getDataAndStore(hash_params, person_type) {
+
 	var person_details = hash_params;
 
 	var person_type_value = person_type.toLowerCase();
 	__$(person_type_value+'_first_name').value = person_details.first_name;
 	__$(person_type_value+'_last_name').value = person_details.last_name;
 	__$(person_type_value+'_birthdate').value = person_details.birth_date;
-	__$('person_'+person_type_value+'_citizenship').value = person_details.citizenship;
+	__$('person_'+person_type_value+'_citizenship').value = (person_details.citizenship === 'Malawi')?'Malawian':person_details.citizenship;
 	__$('person_'+person_type_value+'_local_residential_country').value = person_details.country_of_residence;
 	__$('person_'+person_type_value+'_home_district').value = person_details.home_district;
 	__$('person_'+person_type_value+'_home_ta').value = person_details.home_ta;
-	__$('person_'+person_type_value+'_home_village').value = person_details.home_village;
+	__$('person_'+person_type_value+'_home_village').value = person_details.home_village.trim();
 	__$('person_'+person_type_value+'_current_district').value = person_details.current_district;
 	__$('person_'+person_type_value+'_current_ta').value = person_details.current_ta;
 	__$('person_'+person_type_value+'_current_village').value = person_details.current_village;
+
+
 	//return person_details;
 
 }
