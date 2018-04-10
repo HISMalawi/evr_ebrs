@@ -156,13 +156,6 @@ iTable = {
 			person_action_select_button.onmousedown = function() {
 				var person_type = (hash[0]['gender']==='F')?'Mother':'Father';
 				getDataAndStore(hash[0], person_type);
-				if(person_type === 'Mother') {
-					console.log('Mother');
-					document.getElementById("person_gestation_at_birth").scrollIntoView(true);
-				} else if(person_type === 'Father') {
-					console.log('Father');
-					document.getElementById("informant_details").scrollIntoView(true);
-				}
 			};
 			person_action_td_row_td.appendChild(person_action_select_button);
 
@@ -199,7 +192,25 @@ function getDataAndStore(hash_params, person_type) {
 	__$('person_'+person_type_value+'_current_ta').value = person_details.current_ta;
 	__$('person_'+person_type_value+'_current_village').value = person_details.current_village;
 
+	if(person_type === 'Mother') {
 
+		// var mother_navigation_button = document.createElement("a");
+		// mother_navigation_button.href = '#person_gestation_at_birth';
+		// mother_navigation_button.visibility = 'none';
+		//
+		// mother_navigation_button.click();
+
+		document.getElementById("mother_birth_details").scrollIntoView();
+	} else if(person_type === 'Father') {
+
+		var father_navigation_button = document.createElement("a");
+		father_navigation_button.href = '#informant_details';
+		father_navigation_button.visibility = 'none';
+
+		father_navigation_button.click();
+
+		//document.getElementById("informant_details").scrollIntoView(true);
+	}
 	//return person_details;
 
 }
