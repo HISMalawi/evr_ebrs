@@ -81,6 +81,7 @@
                                :id => "person_birth_weight",
                                :placeholder => '0.000',
                                :tt_pageStyleClass => "NumbersWithoutUnknown nota",
+                               :tt_onLoad => "document.getElementById('iframe').contentWindow.__$('Unknown').style.display = 'none';",
                                :field_type => 'number',
                                :validationRule => '^\d+\.\d{3}$',
                                :validationMessage => "Expecting baby weight to have 3 decimal places.\nAppend zero(s) to the weight for you?",
@@ -213,7 +214,6 @@
                                :helpText => "Mother Current T/A or Area of Residence",
                                :tt_onUnload =>"__$('person_mother_current_village').setAttribute('ajaxURL','/search_by_village?ta='+__$('touchscreenInput' + tstCurrentPage).value+'&district='+__$('person_mother_current_district').value)"
 
-
                 ) %>
 
             <%= text_field_tag("person[mother][current_village]", nil,
@@ -231,6 +231,7 @@
                                :absolute_max => '45',
                                :max => '42',
                                :helpText => "Gestation age at birth in weeks",
+                               :tt_onLoad => "document.getElementById('iframe').contentWindow.__$('Unknown').style.display = 'none';",
                                :tt_pageStyleClass => "NumbersWithUnknown nota",
                                :field_type => 'number',
                                :optional => true
@@ -243,6 +244,7 @@
                                :max => '6',
                                :absolute_max => '12',
                                :helpText => 'Number of prenatal visits',
+                               :tt_onLoad => "document.getElementById('iframe').contentWindow.__$('Unknown').style.display = 'none';",
                                :tt_pageStyleClass => "NumbersWithUnknown nota",
                                :field_type => 'number',
                                :optional => true
@@ -255,6 +257,7 @@
                                :max => '6',
                                :absolute_max => '10',
                                :helpText => "Month of pregnancy prenatal care started",
+                               :tt_onLoad => "document.getElementById('iframe').contentWindow.__$('Unknown').style.display = 'none';",
                                :tt_pageStyleClass => "NumbersWithUnknown nota",
                                :field_type => 'number',
                                :optional => true
@@ -270,6 +273,7 @@
                                :id => "person_number_of_children_born_alive_inclusive",
                                :helpText => "Number of children born to mother, including this child",
                                :tt_pageStyleClass => "NumbersWithUnknown nota",
+                               :tt_onLoad => "__$('Unknown').style.visibility = 'None'",
                                :field_type => 'number'
                 ) %>
 
@@ -278,6 +282,7 @@
                                :helpText => "Number of children born to mother, and still living",
                                :tt_pageStyleClass => "NumbersWithUnknown nota",
                                :field_type => 'number',
+                               :tt_onLoad => "__$('Unknown').style.visibility = 'None'"
                 ) %>
 
             <%= select_tag "person[level_of_education]", options_for_select([ "None", "Primary", "Secondary",
