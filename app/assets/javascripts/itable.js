@@ -156,6 +156,13 @@ iTable = {
 			person_action_select_button.onmousedown = function() {
 				var person_type = (hash[0]['gender']==='F')?'Mother':'Father';
 				getDataAndStore(hash[0], person_type);
+				setTimeout(function () {
+					if(person_type === 'Mother'){
+						gotoPage(tstCurrentPage + 13);
+					} else {
+						gotoPage(tstCurrentPage + 12);
+					}
+				}, 200);
 			};
 			person_action_td_row_td.appendChild(person_action_select_button);
 
@@ -199,8 +206,17 @@ function getDataAndStore(hash_params, person_type) {
 		// mother_navigation_button.visibility = 'none';
 		//
 		// mother_navigation_button.click();
+		var mother_home_address = __$('mother_home_address');
+		mother_home_address.setAttribute('visited', 'true');
 
-		document.getElementById("mother_birth_details").scrollIntoView();
+		var mother_physical_address = __$('mother_physical_address');
+		mother_physical_address.setAttribute('visited', 'true');
+
+		var mother_birth_details = __$('mother_birth_details');
+		mother_birth_details.setAttribute('visited', 'true');
+		mother_birth_details.click();
+		mother_birth_details.className += " " + "active";
+
 	} else if(person_type === 'Father') {
 
 		var father_navigation_button = document.createElement("a");
