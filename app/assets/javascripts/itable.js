@@ -202,10 +202,12 @@ function getDataAndStore(person_params, person_type, action) {
 
 function autoNavigateAndSkip(person_type) {
 	setTimeout(function () {
-		if(person_type === 'Mother' || 'Informant') {
+		if(person_type === 'Mother') {
 			gotoPage(tstCurrentPage + 13);
 		} else if(person_type === 'Father') {
 			gotoPage(tstCurrentPage + 10);
+		} else if(person_type === 'Informant') {
+			gotoPage(tstCurrentPage + 14);
 		}
 	}, 200);
 }
