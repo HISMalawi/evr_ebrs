@@ -367,12 +367,13 @@
         <sub id="informant_details" name="Informant Details">
             <%= select_tag "informant_same_as_mother", options_for_select([ "Yes", "No" ], nil),
                            :id => "informant_same_as_mother",
-                           :tt_onUnload => "(__$('informant_same_as_mother').value.trim() === 'Yes'),loadInformantDetails('mother');",
+                           :tt_onUnload => "(__$('informant_same_as_mother').value.trim() === 'Yes'),loadInformantDetails('Mother');",
                            :helpText => "Mother is informant?"
             %>
             <%= select_tag "informant_same_as_father", options_for_select([ "Yes", "No" ], nil),
                            :id => "informant_same_as_father",
                            :condition => "__$('informant_same_as_mother').value === 'No'",
+                           :tt_onUnload => "(__$('informant_same_as_father').value.trim() === 'Yes'),loadInformantDetails('Father');",
                            :helpText => "Father is informant?"
             %>
 
@@ -416,6 +417,7 @@
             %>
             <%= text_field_tag("person[informant][other_informant_relationship_to_person]", nil,
                                :id => "other_informant_relationship_to_person",
+                               :condition => "__$('person_informant_relationship_to_person').value === 'Other'",
                                :helpText => "Specifiy informant relationship",
                 ) %>
         </sub>

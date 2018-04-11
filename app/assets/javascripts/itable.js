@@ -175,9 +175,9 @@ iTable = {
 	}
 };
 
-function getDataAndStore(hash_params, person_type, action) {
+function getDataAndStore(person_params, person_type, action) {
 
-	var person_details = hash_params;
+	var person_details = person_params;
 
 	var person_type_value = person_type.toLowerCase();
 	__$(person_type_value+'_first_name').value = person_details.first_name;
@@ -202,15 +202,52 @@ function getDataAndStore(hash_params, person_type, action) {
 
 function autoNavigateAndSkip(person_type) {
 	setTimeout(function () {
-		if(person_type === 'Mother'){
+		if(person_type === 'Mother' || 'Informant') {
 			gotoPage(tstCurrentPage + 13);
-		} else {
-			gotoPage(tstCurrentPage + 12);
+		} else if(person_type === 'Father') {
+			gotoPage(tstCurrentPage + 10);
 		}
 	}, 200);
 }
 
+function loadParentDetails(parent_type) {
+
+	var person_type = parent_type.toLowerCase();
+
+	var parent_details = {};
+	parent_details.first_name = __$(person_type+'_first_name').value.trim();
+	parent_details.last_name = __$(person_type+'_last_name').value.trim();
+	parent_details.birthdate = __$(person_type+'_birthdate').value.trim();
+	parent_details.citizenship = __$('person_'+person_type+'_citizenship').value.trim();
+	parent_details.local_residential_country = __$('person_'+person_type+'_local_residential_country').value.trim();
+	parent_details.home_district = __$('person_'+person_type+'_home_district').value.trim();
+	parent_details.home_ta = __$('person_'+person_type+'_home_ta').value.trim();
+	parent_details.home_village = __$('person_'+person_type+'_home_village').value.trim();
+	parent_details.current_district = __$('person_'+person_type+'_current_district').value.trim();
+	parent_details.current_ta = __$('person_'+person_type+'_current_ta').value.trim();
+	parent_details.current_village = __$('person_'+person_type+'_current_village').value.trim();
+
+	return parent_details;
+}
+
 function loadInformantDetails(informant_type) {
-	console.log('informant');
-	alert('hello');
+
+	var preloaded_person = loadParentDetails(informant_type);
+
+	__$('informant_first_name').value = preloaded_person.first_name;
+	__$('informant_last_name').value = preloaded_person.last_name;
+	__$('informant_birthdate').value = preloaded_person.birthdate;
+	__$('person_informant_citizenship').value = preloaded_person.citizenship;
+	__$('person_informant_local_residential_country').value = preloaded_person.local_residential_country;
+	__$('person_informant_relationship_to_person').value = informant_type;
+	__$('other_informant_relationship_to_person').value = '';
+	__$('person_informant_home_district').value = preloaded_person.home_district;
+	__$('person_informant_home_ta').value = preloaded_person.home_ta;
+	__$('person_informant_home_village').value = preloaded_person.home_village;
+	__$('person_informant_current_district').value = preloaded_person.current_district;
+	__$('person_informant_current_ta').value = preloaded_person.current_ta;
+	__$('person_informant_current_village').value = preloaded_person.current_village;
+	__$('person_informant_phone_number').value = 'Unknown';
+
+	autoNavigateAndSkip('Informant');
 }
