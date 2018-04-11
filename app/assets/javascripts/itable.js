@@ -16,7 +16,7 @@ sample = {
 };
 
 iTable = {
-	init: function(hash, parent){
+	init: function(hash, parent) {
 		var table = document.createElement("table");
 		table.style.border = '2px black solid';
 		table.style.width = '95%';
@@ -155,14 +155,7 @@ iTable = {
 			person_action_select_button.appendChild(person_action_select_button_text);
 			person_action_select_button.onmousedown = function() {
 				var person_type = (hash[0]['gender']==='F')?'Mother':'Father';
-				getDataAndStore(hash[0], person_type);
-				setTimeout(function () {
-					if(person_type === 'Mother'){
-						gotoPage(tstCurrentPage + 13);
-					} else {
-						gotoPage(tstCurrentPage + 12);
-					}
-				}, 200);
+				getDataAndStore(hash[0], person_type, 'select_only');
 			};
 			person_action_td_row_td.appendChild(person_action_select_button);
 
@@ -171,7 +164,7 @@ iTable = {
 			person_action_select_and_edit_button.appendChild(person_action_select_and_edit_button_text);
 			person_action_select_and_edit_button.onmousedown = function() {
 				var person_type = (hash[0]['gender']==='F')?'Mother':'Father';
-				getDataAndStore(hash[0], person_type);
+				getDataAndStore(hash[0], person_type, 'select_and_edit');
 			};
 			person_action_td_row_td.appendChild(person_action_select_and_edit_button);
 
@@ -182,7 +175,7 @@ iTable = {
 	}
 };
 
-function getDataAndStore(hash_params, person_type) {
+function getDataAndStore(hash_params, person_type, action) {
 
 	var person_details = hash_params;
 
@@ -199,34 +192,25 @@ function getDataAndStore(hash_params, person_type) {
 	__$('person_'+person_type_value+'_current_ta').value = person_details.current_ta;
 	__$('person_'+person_type_value+'_current_village').value = person_details.current_village;
 
-	if(person_type === 'Mother') {
-
-		// var mother_navigation_button = document.createElement("a");
-		// mother_navigation_button.href = '#person_gestation_at_birth';
-		// mother_navigation_button.visibility = 'none';
-		//
-		// mother_navigation_button.click();
-		var mother_home_address = __$('mother_home_address');
-		mother_home_address.setAttribute('visited', 'true');
-
-		var mother_physical_address = __$('mother_physical_address');
-		mother_physical_address.setAttribute('visited', 'true');
-
-		var mother_birth_details = __$('mother_birth_details');
-		mother_birth_details.setAttribute('visited', 'true');
-		mother_birth_details.click();
-		mother_birth_details.className += " " + "active";
-
-	} else if(person_type === 'Father') {
-
-		var father_navigation_button = document.createElement("a");
-		father_navigation_button.href = '#informant_details';
-		father_navigation_button.visibility = 'none';
-
-		father_navigation_button.click();
-
-		//document.getElementById("informant_details").scrollIntoView(true);
+	if(action === 'select_only') {
+		autoNavigateAndSkip(person_type);
+	} else {
+		gotoPage(tstCurrentPage + 1);
 	}
-	//return person_details;
 
+}
+
+function autoNavigateAndSkip(person_type) {
+	setTimeout(function () {
+		if(person_type === 'Mother'){
+			gotoPage(tstCurrentPage + 13);
+		} else {
+			gotoPage(tstCurrentPage + 12);
+		}
+	}, 200);
+}
+
+function loadInformantDetails(informant_type) {
+	console.log('informant');
+	alert('hello');
 }

@@ -367,10 +367,12 @@
         <sub id="informant_details" name="Informant Details">
             <%= select_tag "informant_same_as_mother", options_for_select([ "Yes", "No" ], nil),
                            :id => "informant_same_as_mother",
+                           :tt_onUnload => "(__$('informant_same_as_mother').value.trim() === 'Yes'),loadInformantDetails('mother');",
                            :helpText => "Mother is informant?"
             %>
             <%= select_tag "informant_same_as_father", options_for_select([ "Yes", "No" ], nil),
                            :id => "informant_same_as_father",
+                           :condition => "__$('informant_same_as_mother').value === 'No'",
                            :helpText => "Father is informant?"
             %>
 
