@@ -226,6 +226,10 @@
         <sub id="mother_birth_details" name="Mother Birth Details">
             <%= text_field_tag("gestation_at_birth", nil,
                                :id => "person_gestation_at_birth",
+                               :absolute_min => '30',
+                               :min => '36',
+                               :absolute_max => '45',
+                               :max => '42',
                                :helpText => "Gestation age at birth in weeks",
                                :tt_pageStyleClass => "NumbersWithUnknown nota",
                                :field_type => 'number',
@@ -234,7 +238,11 @@
 
             <%= text_field_tag("number_of_prenatal_visits", nil,
                                :id => "person_number_of_prenatal_visits",
-                               :helpText => "Number of prenatal visits",
+                               :min => '3',
+                               :absolute_min => '0',
+                               :max => '6',
+                               :absolute_max => '12',
+                               :helpText => 'Number of prenatal visits',
                                :tt_pageStyleClass => "NumbersWithUnknown nota",
                                :field_type => 'number',
                                :optional => true
@@ -242,6 +250,10 @@
 
             <%= text_field_tag("month_prenatal_care_started", nil,
                                :id => "person_month_prenatal_care_started",
+                               :min => '3',
+                               :absolute_min => '1',
+                               :max => '6',
+                               :absolute_max => '10',
                                :helpText => "Month of pregnancy prenatal care started",
                                :tt_pageStyleClass => "NumbersWithUnknown nota",
                                :field_type => 'number',
