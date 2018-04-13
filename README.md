@@ -46,7 +46,7 @@ database.yml
 
 elasticsearchsetting.yml
 -
-    cp config/elasticsearchsetting.yml.example config/elasticsearching.yml
+    cp config/elasticsearchsetting.yml.example config/elasticsearchsetting.yml
 
 settings.yml
 -
