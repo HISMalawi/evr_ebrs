@@ -91,7 +91,7 @@ iTable = {
 			person_row.appendChild(person_details_td);
 
 			// -- row 1
-			var person_details_first_name_row = document.createElement("td");
+			var person_details_first_name_row = document.createElement("tr");
 			person_details_td.appendChild(person_details_first_name_row);
 
 			var person_details_first_name = document.createElement("td");
@@ -99,7 +99,7 @@ iTable = {
 			person_details_first_name_row.appendChild(person_details_first_name);
 
 			// -- row 2
-			var person_details_last_name_row = document.createElement("td");
+			var person_details_last_name_row = document.createElement("tr");
 			person_details_td.appendChild(person_details_last_name_row);
 
 			var person_details_last_name = document.createElement("td");
@@ -107,7 +107,7 @@ iTable = {
 			person_details_last_name_row.appendChild(person_details_last_name);
 
 			// -- row 3
-			var person_details_gender_row = document.createElement("td");
+			var person_details_gender_row = document.createElement("tr");
 			person_details_td.appendChild(person_details_gender_row);
 
 			var person_details_gender = document.createElement("td");
@@ -115,7 +115,7 @@ iTable = {
 			person_details_gender_row.appendChild(person_details_gender);
 
 			// -- row 4
-			var person_details_birthdate_row = document.createElement("td");
+			var person_details_birthdate_row = document.createElement("tr");
 			person_details_td.appendChild(person_details_birthdate_row);
 
 			var person_details_birthdate = document.createElement("td");
@@ -123,7 +123,7 @@ iTable = {
 			person_details_birthdate_row.appendChild(person_details_birthdate);
 
 			// -- row 5
-			var person_details_home_address_row = document.createElement("td");
+			var person_details_home_address_row = document.createElement("tr");
 			person_details_td.appendChild(person_details_home_address_row);
 
 			var person_details_home_address = document.createElement("td");
@@ -131,7 +131,7 @@ iTable = {
 			person_details_home_address_row.appendChild(person_details_home_address);
 
 			// -- row 6
-			var person_details_current_address_row = document.createElement("td");
+			var person_details_current_address_row = document.createElement("tr");
 			person_details_td.appendChild(person_details_current_address_row);
 
 			var person_details_current_address = document.createElement("td");
@@ -187,7 +187,7 @@ function getDataAndStore(person_params, person_type, action) {
 	__$('person_'+person_type_value+'_local_residential_country').value = person_details.country_of_residence;
 	__$('person_'+person_type_value+'_home_district').value = person_details.home_district;
 	__$('person_'+person_type_value+'_home_ta').value = person_details.home_ta;
-	__$('person_'+person_type_value+'_home_village').value = person_details.home_village.trim();
+	__$('person_'+person_type_value+'_home_village').value = person_details.home_village;
 	__$('person_'+person_type_value+'_current_district').value = person_details.current_district;
 	__$('person_'+person_type_value+'_current_ta').value = person_details.current_ta;
 	__$('person_'+person_type_value+'_current_village').value = person_details.current_village;
@@ -205,7 +205,7 @@ function autoNavigateAndSkip(person_type) {
 		if(person_type === 'Mother') {
 			gotoPage(tstCurrentPage + 13);
 		} else if(person_type === 'Father') {
-			gotoPage(tstCurrentPage + 10);
+			gotoPage(tstCurrentPage + 12);
 		} else if(person_type === 'Informant') {
 			gotoPage(tstCurrentPage + 14);
 		}
@@ -217,17 +217,17 @@ function loadParentDetails(parent_type) {
 	var person_type = parent_type.toLowerCase();
 
 	var parent_details = {};
-	parent_details.first_name = __$(person_type+'_first_name').value.trim();
-	parent_details.last_name = __$(person_type+'_last_name').value.trim();
-	parent_details.birthdate = __$(person_type+'_birthdate').value.trim();
-	parent_details.citizenship = __$('person_'+person_type+'_citizenship').value.trim();
-	parent_details.local_residential_country = __$('person_'+person_type+'_local_residential_country').value.trim();
-	parent_details.home_district = __$('person_'+person_type+'_home_district').value.trim();
-	parent_details.home_ta = __$('person_'+person_type+'_home_ta').value.trim();
-	parent_details.home_village = __$('person_'+person_type+'_home_village').value.trim();
-	parent_details.current_district = __$('person_'+person_type+'_current_district').value.trim();
-	parent_details.current_ta = __$('person_'+person_type+'_current_ta').value.trim();
-	parent_details.current_village = __$('person_'+person_type+'_current_village').value.trim();
+	parent_details.first_name = __$(person_type+'_first_name').value;
+	parent_details.last_name = __$(person_type+'_last_name').value;
+	parent_details.birthdate = __$(person_type+'_birthdate').value;
+	parent_details.citizenship = __$('person_'+person_type+'_citizenship').value;
+	parent_details.local_residential_country = __$('person_'+person_type+'_local_residential_country').value;
+	parent_details.home_district = __$('person_'+person_type+'_home_district').value;
+	parent_details.home_ta = __$('person_'+person_type+'_home_ta').value;
+	parent_details.home_village = __$('person_'+person_type+'_home_village').value;
+	parent_details.current_district = __$('person_'+person_type+'_current_district').value;
+	parent_details.current_ta = __$('person_'+person_type+'_current_ta').value;
+	parent_details.current_village = __$('person_'+person_type+'_current_village').value;
 
 	return parent_details;
 }

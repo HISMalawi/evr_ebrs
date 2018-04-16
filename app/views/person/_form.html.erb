@@ -28,7 +28,7 @@
 				},
 				error: function(){
 					__$("touchscreenInput" + tstCurrentPage).value = "";
-					showMessage("Something Went Wrong!");
+					showMessage("Sorry, that person was not found. Click next to Register");
 				}
 			})
 		}
@@ -169,8 +169,8 @@
             <%= text_field_tag("person[mother][birthdate]", nil,
                                :id => "mother_birthdate",
                                :field_type => "date",
-                               :tt_onUnload => "checkWeddingDate(__$('mother_birthdate'),'Mother');",
-                               :tt_onLoad => "__$('Unknown').style.display = 'none', validateDate(__$('child_birthdate'), __$('mother_birthdate'), 45, 14, 60, 8);dateInterval('mother_birthdate');",
+                               :tt_onUnload => "checkLoadedDate(__$('mother_birthdate').value);",
+                               :tt_onLoad => "__$('Unknown').style.display = 'none';",
                                :helpText => "Mother birthdate",
                                :optional => true
                 ) %>
@@ -516,6 +516,10 @@
 <% end %>
 
 <script>
+    function checkLoadedDate(date_value) {
+        console.log(Date.parse(date_value));
+    }
+
 	function reportingDate(){
 
 		commence = new Date(8 + '/' + 1 + '/' + 2015).format("YYYY-mm-dd");
