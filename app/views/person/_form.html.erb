@@ -70,6 +70,7 @@
             <%= text_field_tag("person[birthdate]", nil,
                                :id => "child_birthdate",
                                :field_type => "date",
+                               :allowFreeText => false,
                                :tt_onLoad => "__$('Unknown').style.display = 'none'",
                                :helpText => "Birthdate",
                                :absolute_min => Time.now.advance(:weeks => -6).strftime('%Y/%m/%d'),

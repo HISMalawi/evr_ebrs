@@ -38,6 +38,7 @@ iTable = {
 
 			// -- row 1
 			var person_header_first_name_row = document.createElement("tr");
+			person_header_first_name_row.style.backgroundColor = 'lightblue';
 			person_header_td.appendChild(person_header_first_name_row);
 
 			var person_header_first_name = document.createElement("td");
@@ -54,6 +55,7 @@ iTable = {
 
 			// -- row 3
 			var person_header_gender_row = document.createElement("tr");
+			person_header_gender_row.style.backgroundColor = 'lightblue';
 			person_header_td.appendChild(person_header_gender_row);
 
 			var person_header_gender = document.createElement("td");
@@ -70,6 +72,7 @@ iTable = {
 
 			// -- row 5
 			var person_header_home_address_row = document.createElement("tr");
+			person_header_home_address_row.style.backgroundColor = 'lightblue';
 			person_header_td.appendChild(person_header_home_address_row);
 
 			var person_header_home_address = document.createElement("td");
@@ -92,6 +95,7 @@ iTable = {
 
 			// -- row 1
 			var person_details_first_name_row = document.createElement("tr");
+			person_details_first_name_row.style.backgroundColor = 'lightblue';
 			person_details_td.appendChild(person_details_first_name_row);
 
 			var person_details_first_name = document.createElement("td");
@@ -108,6 +112,7 @@ iTable = {
 
 			// -- row 3
 			var person_details_gender_row = document.createElement("tr");
+			person_details_gender_row.style.backgroundColor = 'lightblue';
 			person_details_td.appendChild(person_details_gender_row);
 
 			var person_details_gender = document.createElement("td");
@@ -124,6 +129,7 @@ iTable = {
 
 			// -- row 5
 			var person_details_home_address_row = document.createElement("tr");
+			person_details_home_address_row.style.backgroundColor = 'lightblue';
 			person_details_td.appendChild(person_details_home_address_row);
 
 			var person_details_home_address = document.createElement("td");
