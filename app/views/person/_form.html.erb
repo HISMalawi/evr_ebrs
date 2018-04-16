@@ -56,8 +56,11 @@
         <sub id="child_details" name="Child Details">
             <%= text_field_tag("person[first_name]", nil,
                                :id => "child_first_name",
-                               :helpText => "First name"
-                ) %>
+                               :helpText => "First name",
+                               :word_min_length => 2,
+                               :tt_onLoad => "checkSpace('child_first_name');validateNameLength('person','child_first_name',2)",
+                               :tt_onUnload => 'setTimeout("checkChanges(' + 'child_first_name' + ')", 1000)'
+                ) rescue '' %>
 
             <%= text_field_tag("person[last_name]", nil,
                                :id => "child_last_name",
@@ -68,7 +71,10 @@
                                :id => "child_birthdate",
                                :field_type => "date",
                                :tt_onLoad => "__$('Unknown').style.display = 'none'",
-                               :helpText => "Birthdate"
+                               :helpText => "Birthdate",
+                               :absolute_min => Time.now.advance(:weeks => -6).strftime('%Y/%m/%d'),
+                               :absolute_max => Date.today.strftime('%Y/%m/%d'),
+                               :tt_onUnload => "__$('informant_report_date').setAttribute('absolute_min', __$('child_birthdate').value.trim());"
                 ) %>
 
             <%= select_tag "person[gender]", options_for_select([ "Male", "Female" ], nil),
@@ -116,6 +122,7 @@
                            :id => "person_date_of_marriage",
                            :helpText => "Date of marriage",
                            :field_type => "date",
+                           :absolute_max => Date.today.strftime('%Y/%m/%d'),
                            :condition => "__$('person_parents_married_to_each_other').value == 'Yes'",
                            :tt_onLoad => "__$('Unknown').style.display = 'none'"
             %>
@@ -162,8 +169,10 @@
             <%= text_field_tag("person[mother][birthdate]", nil,
                                :id => "mother_birthdate",
                                :field_type => "date",
-                               :tt_onLoad => "__$('Unknown').style.display = 'none'",
-                               :helpText => "Mother birthdate"
+                               :tt_onUnload => "checkWeddingDate(__$('mother_birthdate'),'Mother');",
+                               :tt_onLoad => "__$('Unknown').style.display = 'none', validateDate(__$('child_birthdate'), __$('mother_birthdate'), 45, 14, 60, 8);dateInterval('mother_birthdate');",
+                               :helpText => "Mother birthdate",
+                               :optional => true
                 ) %>
 
             <%= text_field_tag("person[mother][citizenship]", nil,
@@ -507,5 +516,964 @@
 <% end %>
 
 <script>
+	function reportingDate(){
+
+		commence = new Date(8 + '/' + 1 + '/' + 2015).format("YYYY-mm-dd");
+
+		original = new Date(6 + '/' + 15 + '/' + 2015).format("YYYY-mm-dd");
+
+		var date_of_birth = new Date(__$("person_birthdate").value).format("YYYY-mm-dd");
+
+		if (original < commence){
+			commence = original;
+		}
+		if(original < date_of_birth){
+			original = date_of_birth
+		}
+		return new Date(original).format();
+
+	}
+
+	function nationality(){
+
+		if(__$('textForsame_address_with_mother').value.trim() == 'Yes' && __$('person_mother_citizenship').value.trim() == 'Malawian') {
+			copyMothersResidence();
+		}
+		else if (__$('textForsame_address_with_mother').value.trim() == 'Yes' && __$('person_mother_citizenship').value.trim() != 'Malawian'){
+			copyMothersForeignResidence()
+		}else {
+			deleteFathersResidence();
+		}
+	}
+	function copyMothersForeignResidence(){
+
+		if (__$("person_father_residential_country") && __$("textForperson_father_residential_country") && __$("person_mother_residential_country"))
+		{
+			__$("person_father_residential_country").value = __$("person_mother_residential_country").value;
+			__$("textForperson_father_residential_country").value = __$("person_mother_residential_country").value;
+		}
+
+		if (__$("person_father_current_district") && __$("person_mother_foreigner_current_district")){
+			__$("person_father_current_district").value = __$("person_mother_foreigner_current_district").value;
+
+			__$("textForperson_father_current_district").value = __$("person_mother_foreigner_current_district").value;
+		}
+
+		if (__$("person_father_current_village") && __$("person_mother_foreigner_current_village")){
+			__$("person_father_current_village").value = __$("person_mother_foreigner_current_village").value;
+
+			__$("textForperson_father_current_village").value = __$("person_mother_foreigner_current_village").value;
+		}
+
+		if (__$("person_father_current_ta") && __$("person_mother_foreigner_current_ta") && __$("textForperson_father_current_ta")) {
+
+			__$("person_father_current_ta").value = __$("person_mother_foreigner_current_ta").value;
+
+			__$("textForperson_father_current_ta").value = __$("person_mother_foreigner_current_ta").value;
+
+
+		}
+
+		var section =  parseInt(__$("textForperson_father_current_district").getAttribute("section"));
+		loadPage(section + 1);
+
+		setTimeout(function() {
+			var section = parseInt(__$("textForfather_home_address_same_as_physical").getAttribute("section"));
+			var pos = parseInt(__$("textForfather_home_address_same_as_physical").getAttribute("pos"));
+			navigateTo(pos, section, false);
+		}, 25);
+
+	}
+
+	function copyMothersResidence() {
+
+		if (__$("person_father_residential_country") && __$("textForperson_father_residential_country") && __$("person_mother_local_residential_country"))
+		{
+			__$("person_father_residential_country").value = __$("person_mother_local_residential_country").value;
+			__$("textForperson_father_residential_country").value = __$("person_mother_local_residential_country").value;
+		}
+
+		if (__$("person_father_current_district") && __$("person_mother_current_district") && __$("textForperson_father_current_district")) {
+
+			__$("person_father_current_district").value = __$("person_mother_current_district").value;
+
+			__$("textForperson_father_current_district").value = __$("person_mother_current_district").value;
+
+		}
+
+		if (__$("person_father_current_village") && __$("person_mother_current_village") && __$("textForperson_father_current_village")) {
+
+			__$("person_father_current_village").value = __$("person_mother_current_village").value;
+
+			__$("textForperson_father_current_village").value = __$("person_mother_current_village").value;
+
+		}
+
+		if (__$("person_father_current_ta") && __$("person_mother_current_ta") && __$("textForperson_father_current_ta")) {
+
+			__$("person_father_current_ta").value = __$("person_mother_current_ta").value;
+
+			__$("textForperson_father_current_ta").value = __$("person_mother_current_ta").value;
+
+			//  autoNavigate("textForperson_father_current_ta");
+
+		}
+
+		var section =  parseInt(__$("textForperson_father_current_district").getAttribute("section"));
+		loadPage(section + 1);
+
+		setTimeout(function() {
+			var section = parseInt(__$("textForfather_home_address_same_as_physical").getAttribute("section"));
+			var pos = parseInt(__$("textForfather_home_address_same_as_physical").getAttribute("pos"));
+			navigateTo(pos, section, false);
+		}, 25);
+	}
+
+	function deleteFathersResidence() {
+
+		if (__$("person_father_residential_country") && __$("textForperson_father_residential_country"))
+		{
+			__$("person_father_residential_country").value = "";
+			__$("textForperson_father_residential_country").value = "";
+		}
+
+		if (__$("person_father_current_district") && __$("textForperson_father_current_district")) {
+
+			__$("person_father_current_district").value = "";
+
+			__$("textForperson_father_current_district").value = "";
+
+		}
+
+		if (__$("person_father_current_ta") && __$("textForperson_father_current_ta")) {
+
+			__$("person_father_current_ta").value = "";
+
+			__$("textForperson_father_current_ta").value = "";
+
+		}
+
+		if (__$("person_father_current_village") && __$("textForperson_father_current_village")) {
+
+			__$("person_father_current_village").value = "";
+
+			__$("textForperson_father_current_village").value = "";
+
+		}
+
+	}
+
+	function loadMothersDetails(){
+
+		console.log("Invoking the loadMother")
+
+		if (__$("person_mother_first_name") && __$("person_informant_first_name") && __$("textForperson_informant_first_name")) {
+
+			__$("person_informant_first_name").value = __$("person_mother_first_name").value;
+
+			__$("textForperson_informant_first_name").value = __$("person_mother_first_name").value;
+
+			console.log("loadMothersDetails 1 " + __$("person_informant_first_name").value)
+		}
+
+		if (__$("person_mother_middle_name") && __$("person_informant_middle_name") && __$("textForperson_informant_middle_name")) {
+
+			__$("person_informant_middle_name").value = __$("person_mother_middle_name").value;
+
+			__$("textForperson_informant_middle_name").value = __$("person_mother_middle_name").value;
+
+		}
+
+		if (__$("person_mother_last_name") && __$("person_informant_last_name") && __$("textForperson_informant_last_name")) {
+
+			__$("person_informant_last_name").value = __$("person_mother_last_name").value;
+
+			__$("textForperson_informant_last_name").value = __$("person_mother_last_name").value;
+
+		}
+
+		if (__$("person_informant_relationship_to_person") && __$("textForperson_informant_relationship_to_person")) {
+
+			__$("person_informant_relationship_to_person").value = "Mother";
+
+			__$("textForperson_informant_relationship_to_person").value = "Mother";
+
+		}
+
+		if (__$("person_mother_current_district") && __$("person_informant_current_district")) {
+
+			__$("person_informant_current_district").value = __$("person_mother_current_district").value;
+
+		}
+
+		if (__$("person_mother_current_ta") && __$("person_informant_current_ta")) {
+
+			__$("person_informant_current_ta").value = __$("person_mother_current_ta").value;
+
+		}
+
+		if (__$("person_mother_current_village") && __$("person_informant_current_village")) {
+
+			__$("person_informant_current_village").value = __$("person_mother_current_village").value;
+
+		}
+
+		if (__$("person_mother_id_number")) {
+
+			__$("person_informant_id_number").value = __$("person_mother_id_number").value;
+
+			__$("textForperson_informant_id_number").value = __$("person_mother_id_number").value;
+
+
+		}
+
+		var section =  parseInt(__$("textForperson_informant_id_number").getAttribute("section"));
+		loadPage(section + 1);
+		var section =  parseInt(__$("textForperson_informant_addressline1").getAttribute("section"));
+		var pos = parseInt(__$("textForperson_informant_addressline1").getAttribute("pos"));
+		navigateTo(pos, section, false);
+	}
+
+	function unloadInformantsDetails(){
+
+		if (__$("person_informant_first_name") && __$("textForperson_informant_first_name")) {
+
+			__$("person_informant_first_name").value = "";
+
+			__$("textForperson_informant_first_name").value = "";
+
+		}
+
+		if (__$("person_informant_middle_name") && __$("textForperson_informant_middle_name")) {
+
+			__$("person_informant_middle_name").value = "";
+
+			__$("textForperson_informant_middle_name").value = "";
+
+		}
+
+		if (__$("person_informant_last_name") && __$("textForperson_informant_last_name")) {
+
+			__$("person_informant_last_name").value = "";
+
+			__$("textForperson_informant_last_name").value = "";
+
+		}
+
+		if (__$("person_informant_relationship_to_person") && __$("textForperson_informant_relationship_to_person")) {
+
+			__$("person_informant_relationship_to_person").value = "";
+
+			__$("textForperson_informant_relationship_to_person").value = "";
+
+		}
+
+		if (__$("person_informant_current_district") && __$("textForperson_informant_current_district")) {
+
+			__$("person_informant_current_district").value = "";
+
+			__$("textForperson_informant_current_district").value = "";
+
+		}
+
+		if (__$("person_informant_current_ta") && __$("textForperson_informant_current_ta")) {
+
+			__$("person_informant_current_ta").value = "";
+
+			__$("textForperson_informant_current_ta").value = "";
+
+		}
+
+		if (__$("person_informant_current_village") && __$("textForperson_informant_current_village")) {
+
+			__$("person_informant_current_village").value = "";
+
+			__$("textForperson_informant_current_village").value = "";
+
+		}
+
+		if(__$("person_informant_id_number") && __$("textForperson_informant_id_number")) {
+
+			__$("person_informant_id_number").value = "";
+
+			__$("textForperson_informant_id_number").value = "";
+		}
+
+
+	}
+
+	function autoNavigate(id){
+
+		if (id == "textForperson_mother_home_ta"){
+			var pos = parseInt(__$(id).getAttribute("pos")) - 1;
+		}else{
+			var pos = parseInt(__$(id).getAttribute("pos")) + 1;
+		}
+
+		var section =  parseInt(__$(id).getAttribute("section"));
+
+		gotoQuestion(pos, section);
+
+	}
+
+
+	function slowNavigate(id){
+
+		cursorPos = parseInt(__$(id).getAttribute("pos")) - 1;
+
+		section =  parseInt(__$(id).getAttribute("section"));
+
+		navigateTo(cursorPos, currentPage);
+
+		gotoNext();
+
+		//gotoQuestion(pos, section);
+	}
+
+	function loadFathersDetails(){
+
+		if (__$("person_father_first_name") && __$("person_informant_first_name") && __$("textForperson_informant_first_name")) {
+
+			__$("person_informant_first_name").value = __$("person_father_first_name").value;
+
+			if (__$("textForperson_informant_first_name"))
+				__$("textForperson_informant_first_name").value = __$("person_father_first_name").value;
+
+			//autoNavigate("textForperson_informant_first_name");
+
+		}
+
+		if (__$("person_father_middle_name") && __$("person_informant_middle_name") && __$("textForperson_informant_middle_name")) {
+
+			__$("person_informant_middle_name").value = __$("person_father_middle_name").value;
+
+			if (__$("textForperson_informant_middle_name"))
+				__$("textForperson_informant_middle_name").value = __$("person_father_middle_name").value;
+
+			//autoNavigate("textForperson_informant_middle_name");
+
+		}
+
+		if (__$("person_father_last_name") && __$("person_informant_last_name") && __$("textForperson_informant_last_name")) {
+
+			__$("person_informant_last_name").value = __$("person_father_last_name").value;
+
+			if (__$("textForperson_informant_last_name"))
+				__$("textForperson_informant_last_name").value = __$("person_father_last_name").value;
+
+			autoNavigate("textForperson_informant_last_name");
+
+		}
+
+		if (__$("person_informant_relationship_to_person") && __$("textForperson_informant_relationship_to_person")) {
+
+			__$("person_informant_relationship_to_person").value = "Father";
+
+			if (__$("textForperson_informant_relationship_to_person"))
+				__$("textForperson_informant_relationship_to_person").value = "Father";
+
+			//autoNavigate("textForperson_informant_relationship_to_person");
+
+		}
+
+		if (__$("person_father_current_district") && __$("person_informant_current_district")) {
+
+			__$("person_informant_current_district").value = __$("person_father_current_district").value;
+
+			//autoNavigate("textForperson_informant_current_district");
+
+		}
+
+		if (__$("person_father_current_ta") && __$("person_informant_current_ta")) {
+
+			__$("person_informant_current_ta").value = __$("person_father_current_ta").value;
+
+			//autoNavigate("textForperson_informant_current_ta");
+
+		}
+
+		if (__$("person_father_current_village") && __$("person_informant_current_village")) {
+
+			__$("person_informant_current_village").value = __$("person_father_current_village").value;
+
+			//autoNavigate("textForperson_informant_current_village");
+
+		}
+
+		if (__$("person_father_id_number")) {
+
+			__$("person_informant_id_number").value = __$("person_father_id_number").value;
+
+			if (__$("textForperson_informant_id_number"))
+				__$("textForperson_informant_id_number").value = __$("person_father_id_number").value;
+
+			//autoNavigate("textForperson_informant_id_number")
+
+
+		}
+
+		var section =  parseInt(__$("textForperson_informant_id_number").getAttribute("section"));
+		loadPage(section + 1);
+		var section =  parseInt(__$("textForperson_informant_addressline1").getAttribute("section"));
+		var pos = parseInt(__$("textForperson_informant_addressline1").getAttribute("pos"));
+		navigateTo(pos, section, false);
+
+	}
+
+	function updateFacilityDetails(){
+
+		__$("person_place_of_birth").value = "This Hospital";
+
+		__$("person_hospital_of_birth").value = "<%= Location.current.name %>";
+
+		__$("person_birth_district").value = "<%=Location.find(Location.current.parent_location).name%>";
+	}
+
+	function loadHealthFacility() {
+
+		// __$("textForperson_birth_district").setAttribute('disabled', 'disabled');
+
+		// __$("person_birth_district").setAttribute('disabled', 'disabled');
+
+		if(__$("person_place_of_birth").value == "This Hospital") {
+
+			__$("textForperson_hospital_of_birth").value = "<%= Location.current.name %>";
+
+			__$("person_hospital_of_birth").value = "<%= Location.current.name %>";
+
+			__$("textForperson_birth_district").value = "<%=Location.find(Location.current.parent_location).name%>";
+
+			__$("person_birth_district").value = "<%=Location.find(Location.current.parent_location).name%>";
+
+			//autoNavigate("textForperson_hospital_of_birth");
+
+			//autoNavigate("textForperson_birth_district");
+
+
+		}else if(__$("person_place_of_birth").value == "Other" ) {
+
+			__$("textForperson_hospital_of_birth").value = "";
+
+			__$("person_hospital_of_birth").value = "";
+
+			__$("textForperson_birth_district").value = "<%=Location.find(Location.current.parent_location).name%>";
+
+			__$("person_birth_district").value = "<%=Location.find(Location.current.parent_location).name%>";
+
+		}
+
+	}
+
+	function loadMothersAddress(){
+
+		if (__$("person_mother_current_district") && __$("person_mother_home_district")) {
+
+			__$("person_mother_home_district").value = __$("person_mother_current_district").value;
+
+			if (__$("textForperson_mother_home_district"))
+				__$("textForperson_mother_home_district").value = __$("person_mother_current_district").value;
+
+			//slowNavigate("textForperson_mother_home_district");
+
+		}
+
+		if (__$("person_mother_current_ta") && __$("person_mother_home_ta")) {
+
+			__$("person_mother_home_ta").value = __$("person_mother_current_ta").value;
+
+			if (__$("textForperson_mother_home_ta"))
+				__$("textForperson_mother_home_ta").value = __$("person_mother_current_ta").value;
+
+			slowNavigate("textForperson_mother_home_ta");
+
+		}
+
+		if (__$("person_mother_current_village") && __$("person_mother_home_village")) {
+
+
+			//__$("textForperson_mother_home_village").value = __$("person_mother_current_village").value;
+
+			__$("person_mother_home_village").value = __$("person_mother_current_village").value;
+
+			if (__$("textForperson_mother_home_village"))
+				__$("textForperson_mother_home_village").value = __$("person_mother_current_village").value;
+
+			slowNavigate("textForperson_mother_home_village");
+		}
+
+
+		var section =  parseInt(__$("textForperson_mother_home_district").getAttribute("section"));
+		loadPage(section + 1);
+
+		var section =  parseInt(__$("textForperson_gestation_at_birth").getAttribute("section"));
+		var pos = parseInt(__$("textForperson_gestation_at_birth").getAttribute("pos"));
+		navigateTo(pos, section, false);
+	}
+
+	function unloadMothersAddress(){
+
+		if (__$("person_mother_home_district") && __$("textForperson_mother_home_district")) {
+
+			__$("person_mother_home_district").value = "";
+
+			__$("textForperson_mother_home_district").value = "";
+
+		}
+
+		if (__$("person_mother_home_ta") && __$("textForperson_mother_home_ta")) {
+
+			__$("person_mother_home_ta").value = "";
+
+			__$("textForperson_mother_home_ta").value = "";
+
+		}
+
+		if (__$("person_mother_home_village") && __$("textForperson_mother_home_village")) {
+
+			__$("person_mother_home_village").value = "";
+
+			__$("textForperson_mother_home_village").value = "";
+
+		}
+
+
+	}
+
+	function loadForeignMothersAddress(){
+
+		if (__$("person_mother_residential_country") && __$("person_mother_home_country")) {
+
+			__$("person_mother_home_country").value = __$("person_mother_residential_country").value;
+
+			__$("textForperson_mother_home_country").value = __$("person_mother_residential_country").value;
+
+			//autoNavigate("textForperson_mother_home_country");
+
+		}
+
+		if (__$("person_mother_foreigner_current_district") && __$("person_mother_foreigner_home_district")) {
+
+			__$("person_mother_foreigner_current_district").value = __$("person_mother_foreigner_current_district").value;
+
+			__$("textForperson_mother_foreigner_home_district").value = __$("person_mother_foreigner_current_district").value;
+
+			//autoNavigate("textForperson_mother_foregner_home_district");
+
+		}
+
+		if (__$("person_mother_foreigner_current_village") && __$("person_mother_foreigner_home_village")) {
+
+			__$("person_mother_foreigner_home_village").value = __$("person_mother_foreigner_current_village").value;
+
+			__$("textForperson_mother_foreigner_home_village").value = __$("person_mother_foreigner_current_village").value;
+
+			//autoNavigate("textForperson_mother_foreigner_home_village");
+
+		}
+
+		if (__$("person_mother_foreigner_current_ta") && __$("person_mother_foreigner_home_ta")) {
+
+			__$("person_mother_foreigner_home_ta").value = __$("person_mother_foreigner_current_ta").value;
+
+			__$("textForperson_mother_foreigner_home_ta").value = __$("person_mother_foreigner_current_ta").value;
+
+			//autoNavigate("textForperson_mother_foreigner_home_ta");
+
+		}
+
+		var section =  parseInt(__$("textForperson_mother_home_country").getAttribute("section"));
+		loadPage(section + 1);
+
+		var section =  parseInt(__$("textForperson_gestation_at_birth").getAttribute("section"));
+		var pos = parseInt(__$("textForperson_gestation_at_birth").getAttribute("pos"));
+		navigateTo(pos, section, false);
+	}
+
+	function unloadForeignMothersAddress(){
+
+		if (__$("person_mother_home_country") && __$("textForperson_mother_home_country")) {
+
+			__$("person_mother_home_country").value = "";
+
+			__$("textForperson_mother_home_country").value = "";
+
+		}
+
+
+		if (__$("person_mother_foreigner_home_district") && __$("textForperson_mother_foreigner_home_district")) {
+
+			__$("person_mother_foreigner_home_district").value = "";
+
+			__$("textForperson_mother_foreigner_home_district").value = "";
+
+		}
+
+		if (__$("person_mother_foreigner_home_ta") && __$("textForperson_mother_foreigner_home_ta")) {
+
+			__$("person_mother_foreigner_home_ta").value = "";
+
+			__$("textForperson_mother_foreigner_home_ta").value = "";
+
+		}
+
+		if (__$("person_mother_foreigner_home_village") && __$("textForperson_mother_foreigner_home_village")) {
+
+			__$("person_mother_foreigner_home_village").value = "";
+
+			__$("textForperson_mother_foreigner_home_village").value = "";
+
+		}
+
+	}
+
+
+	function loadFathersAddress(){
+
+		if (__$("person_father_current_district") && __$("person_father_home_district")  && __$("textForperson_father_home_district")) {
+
+			__$("person_father_home_district").value = __$("person_father_current_district").value;
+
+			__$("textForperson_father_home_district").value = __$("person_father_current_district").value;
+
+			//autoNavigate("textForperson_father_home_district");
+
+		}
+
+		if (__$("person_father_current_ta") && __$("person_father_home_ta") && __$("textForperson_father_home_ta")) {
+
+			__$("person_father_home_ta").value = __$("person_father_current_ta").value;
+
+			__$("textForperson_father_home_ta").value = __$("person_father_current_ta").value;
+
+			//  autoNavigate("textForperson_father_home_ta");
+		}
+
+		if (__$("person_father_current_village") && __$("person_father_home_village") && __$("textForperson_father_home_village")) {
+
+			__$("person_father_home_village").value = __$("person_father_current_village").value;
+
+			__$("textForperson_father_home_village").value = __$("person_father_current_village").value;
+
+			//autoNavigate("textForperson_father_home_village");
+		}
+
+		var section =  parseInt(__$("textForperson_father_home_district").getAttribute("section"));
+		loadPage(section + 1);
+
+		setTimeout(function() {
+			var section = parseInt(__$("textForinformant_same_as_mother").getAttribute("section"));
+
+			navigateTo(0, section, false);
+		}, 25);
+
+	}
+
+	function unloadFathersAddress(){
+
+		if (__$("person_father_home_district") && __$("textForperson_father_home_district")) {
+
+			__$("person_father_home_district").value = "";
+
+			__$("textForperson_father_home_district").value = "";
+
+		}
+
+		if (__$("person_father_home_ta") && __$("textForperson_father_home_ta")) {
+
+			__$("person_father_home_ta").value = "";
+
+			__$("textForperson_father_home_ta").value = "";
+
+		}
+
+		if (__$("person_father_home_village") && __$("textForperson_father_home_village")) {
+
+			__$("person_father_home_village").value = "";
+
+			if (__$("textForperson_father_home_village"))
+				__$("textForperson_father_home_village").value = "";
+
+		}
+
+
+	}
+
+	function setpersonName() {
+
+		__$('person_copy_mother_name').setAttribute('condition', "__$('person_parents_married_to_each_other').value.trim() == 'No' && __$('person_court_order_attached').value.trim() == 'No' && __$('person_parents_signed').value.trim() == 'No' &&  __$('person_mother_last_name').value.trim().toLowerCase() != __$('person_last_name').value.trim().toLowerCase()");
+	}
+
+	function appendValue(id){
+		setTimeout("checkChanges('" + id + "')", 1000);
+	}
+
+	function possibleChildren(obj, tag){
+
+		// This function assigns limits to a target element based on type of birth
+		var min = 1
+
+		if (obj.value.match(/Twin/i)){
+
+			min = 2;
+
+		}else if (obj.value.match(/Triplet/i)){
+
+			min = 3;
+
+		}else if (obj.value.match(/Other/i)){
+
+			min = 4;
+
+		}
+
+		tag.setAttribute("absolute_min", min);
+
+	}
+
+	function validateDate(obj, tag, min, max, absoluteMin, absoluteMax){
+
+		// This function assigns limits to a target element based on parameters
+
+		ele = obj.value
+		ele = ele.split('/');
+
+		if (obj.value.match(/\W?/i)) {
+			if (ele[1] == '?') {
+				ele[0] = "1";
+				ele[1] = "07";
+			}
+			else if (ele[0] == '?') {
+				ele[1] = parseInt(monthNames[ele[1]]) + 1;
+				ele[1] = (ele[1] < 10 ? "0" + ele[1] : ele[1])
+				ele[0] = "15"
+			}
+		}
+		else {
+			ele[1] = parseInt(monthNames[ele[1]]);
+			ele[1] = ele[1] + 1
+
+			if (ele[1] < 10){
+				ele[1] = "0" + ele[1];
+			}
+		}
+
+		current = new Date(ele[1] + "/" + ele[0] + "/" + ele[2]);
+
+		yr1 = current.getFullYear() - min;
+		yr2 = current.getFullYear() - max;
+		yr3 = current.getFullYear() - absoluteMax;
+		yr4 = current.getFullYear() - absoluteMin;
+
+		min =  yr1 + '/' + ele[1] + '/' + ele[0];
+		max = yr2 + '/' + ele[1] + '/' + ele[0];
+		absoluteMax =  yr3 + '/' + ele[1] + '/' + ele[0];
+
+		if (parseInt(absoluteMin) > 0) {
+			absoluteMin =  yr4 + '/' + ele[1] + '/' + ele[0];
+		}else{
+			absoluteMin = "";
+		}
+
+
+		tag.setAttribute("min", min);
+		tag.setAttribute("max", max);
+		tag.setAttribute("absolute_max", absoluteMax);
+		tag.setAttribute("absolute_min", absoluteMin);
+
+	}
+
+	function copyMothersName(){
+		__$("person_original_surname").value =  __$("person_last_name").value ;
+		__$("person_last_name").value =  __$("person_mother_last_name").value ;
+	}
+
+	function removeMothersName(){
+		if (__$("person_original_surname")) {
+			__$("person_last_name").value = __$("person_original_surname").value;
+
+		}
+	}
+
+	function setChildName() {
+		__$('person_copy_mother_name').setAttribute('condition', "__$('person_parents_married_to_each_other').value.trim() == 'No' && __$('person_court_order_attached').value.trim() == 'No' && __$('person_parents_signed').value.trim() == 'No' &&  __$('person_mother_last_name').value.trim().toLowerCase() != __$('person_last_name').value.trim().toLowerCase()");
+	}
+
+	init();
+
+	summaryHash = {
+		"Child Name" : ["person_first_name","person_middle_name","person_last_name"],
+		"Child Gender" : ["person_gender"],
+		"Child Date of Birth" : ["person_birthdate"],
+		"Place of Birth"    : ["person_place_of_birth"],
+		"Location of Birth" : ["person_hospital_of_birth", "person_birth_district"],
+		"Mother " : ["person_mother_first_name","person_mother_middle_name", "person_mother_last_name"],
+		"Mother Nationality" : ["person_mother_citizenship"],
+		"Father" : ["person_father_first_name", "person_father_middle_name", "person_father_last_name"],
+		"Father Nationality" : ["person_father_citizenship"],
+		"Parents Married to each Other?": ['person_parents_married_to_each_other'],
+		"Court order attached": ['person_court_order_attached'],
+		"Parents signed?" : ["person_parents_signed"],
+		"Form Signed by Informant?" : ["form_signed"],
+		"Delayed Registration" : ['registration_type']
+	};
+
+	showMessage();
+
+	function clearRelated(){
+		if (__$('del')){
+			__$('del').onmousedown = function () {
+
+				if (target) {
+
+					if ("N/A" == target.value.trim()) {
+
+						target.value = "";
+
+					} else {
+
+						target.value = target.value.trim().substring(0, (target.value.trim().length - 1));
+
+					}
+
+					if(target.getAttribute("target") == "person_mother_current_district"){
+
+						__$("person_mother_current_ta").value = "";
+						__$("person_mother_current_village").value = "";
+
+						__$("textForperson_mother_current_ta").value = "";
+						__$("textForperson_mother_current_village").value = "";
+
+					}else if(target.getAttribute("target") == "person_mother_current_ta"){
+
+						__$("person_mother_current_village").value = "";
+
+						__$("textForperson_mother_current_village").value = "";
+
+					}else if(target.getAttribute("target") == "person_mother_home_district"){
+
+						__$("person_mother_home_ta").value = "";
+						__$("person_mother_home_village").value = "";
+
+						__$("textForperson_mother_home_ta").value = "";
+						__$("textForperson_mother_home_village").value = "";
+
+					}else if(target.getAttribute("target") == "person_mother_home_ta"){
+
+						__$("person_mother_home_village").value = "";
+
+						__$("textForperson_mother_home_village").value = "";
+
+					}
+
+
+					if(target.getAttribute("target")){
+
+						if(__$(target.getAttribute("target"))){
+
+							__$(target.getAttribute("target")).value = target.value;
+
+						}
+
+					}
+
+				}
+
+			}
+		}
+
+	}
+
+	function  showMessage() {
+
+		<% if @person.errors.any?
+          errors = []
+          errors << "<p>" + pluralize(@child.errors.count, "error") + " occured while saving this record:</p>"
+           @child.errors.full_messages.each do |message|
+             errors << "<li>" + message + "</li>"
+          end %>
+
+		showMsg('<%= errors.join.html_safe %>', true);
+
+		<% end %>
+
+	}
+
+	function checkWeddingDate( obj,parent)
+	{
+		if (__$('person_parents_married_to_each_other').value.toString().trim().toUpperCase() == "YES")
+		{
+
+			var marriageDate = handleDate(__$('person_date_of_marriage').value.toString().trim())
+
+			var dob = handleDate(obj.value.toString().trim())
+
+			if ((marriageDate - dob) < 0) {
+				showMsg("The date of marriage for " + parent + " is date of birth. Please enter a valid date.");
+				__$("textForperson_date_of_marriage").focus()
+			}
+
+			if (((marriageDate - dob) / (365 * 24 * 60 * 60 * 1000)) <= 10){
+
+				showMsg("The age at marriage of " + parent + " is less than 10 years. Please verify date of marriage and birth.");
+			}
+		}
+	}
+	function handleDate(date){
+
+		ele = date.split('/');
+
+		if (date.match(/\W?/i)) {
+			if (ele[1] == '?') {
+				ele[0] = "1";
+				ele[1] = "07";
+			}
+			else if (ele[0] == '?') {
+				ele[1] = parseInt(monthNames[ele[1]]) + 1;
+				ele[1] = (ele[1] < 10 ? "0" + ele[1] : ele[1])
+				ele[0] = "15"
+			}
+		}
+		else {
+			ele[1] = parseInt(monthNames[ele[1]]);
+			ele[1] = ele[1] + 1
+
+			if (ele[1] < 10){
+				ele[1] = "0" + ele[1];
+			}
+		}
+		return new Date(ele[1] + "/" + ele[0] + "/" + ele[2]);
+
+	}
+
+	function updateRegistrationType()
+	{
+		var person_dob = handleDate(__$('person_birthdate').value);
+
+		if (((Date.parse(__$('person_date_reported').value) - person_dob)/ (1000 * 60 * 60 * 24)) > 42)
+		{
+			__$('registration_type').value = 'Yes'
+		}
+		else
+		{
+			__$('registration_type').value = 'No'
+		}
+	}
+
+    /*summaryHash = {};
+
+     function loadFields(){
+
+     var fields = document.getElementsByClassName("input_cell");
+
+     for(var i = 0; i < fields.length; i++){
+
+     summaryHash[fields[i].id] = [fields[i].id];
+     summaryHash[fields[i].id] = [fields[i].id];
+
+     }
+
+     }
+
+     loadFields();*/
 
 </script>
