@@ -70,9 +70,11 @@
             <%= text_field_tag("person[birthdate]", nil,
                                :id => "child_birthdate",
                                :field_type => "date",
-                               :allowFreeText => false,
+                               :allowFreeText => true,
                                :tt_onLoad => "__$('Unknown').style.display = 'none'",
                                :helpText => "Birthdate",
+                               :validationRule => "^\\d{2}\\/[A-Z][a-z][a-z]\\/\\d{4}$",
+                               :validationMessage => "Expecting a date format input.\nPlease use the provided controls.",
                                :absolute_min => Time.now.advance(:weeks => -6).strftime('%Y/%m/%d'),
                                :absolute_max => Date.today.strftime('%Y/%m/%d'),
                                :tt_onUnload => "__$('informant_report_date').setAttribute('absolute_min', __$('child_birthdate').value.trim());"
@@ -88,7 +90,16 @@
                                :id => "person_birth_weight",
                                :placeholder => '0.000',
                                :tt_pageStyleClass => "NumbersWithoutUnknown nota",
-                               :tt_onLoad => "document.getElementById('iframe').contentWindow.__$('Unknown').style.display = 'none';",
+                               :tt_onLoad => "document.getElementById('Unknown').style.display = 'none';
+                               document.getElementById('char').style.display = 'none';
+                               document.getElementById('qwerty').style.display = 'none';
+                               document.getElementById('comma').style.display = 'none';
+                               document.getElementById('percent').style.display = 'none';
+                               document.getElementById('plus').style.display = 'none';
+                               document.getElementById('minus').style.display = 'none';
+                               document.getElementById('slash').style.display = 'none';
+                               document.getElementById('star').style.display = 'none';
+                               document.getElementById('date').style.display = 'none';",
                                :field_type => 'number',
                                :validationRule => '^\d+\.\d{3}$',
                                :validationMessage => "Expecting baby weight to have 3 decimal places.\nAppend zero(s) to the weight for you?",
@@ -125,7 +136,7 @@
                            :field_type => "date",
                            :absolute_max => Date.today.strftime('%Y/%m/%d'),
                            :condition => "__$('person_parents_married_to_each_other').value == 'Yes'",
-                           :tt_onLoad => "__$('Unknown').style.display = 'none'"
+                           :tt_onLoad => "document.getElementById('Unknown').style.display = 'none';"
             %>
 
             <%= select_tag "person[court_order_attached]", options_for_select([ "Yes", "No" ], nil),
@@ -170,8 +181,9 @@
             <%= text_field_tag("person[mother][birthdate]", nil,
                                :id => "mother_birthdate",
                                :field_type => "date",
-                               :tt_onUnload => "checkLoadedDate(__$('mother_birthdate').value);",
-                               :tt_onLoad => "__$('Unknown').style.display = 'none';",
+                               :validationRule => "^\\d{2}\\/[A-Z][a-z][a-z]\\/\\d{4}$",
+                               :validationMessage => "Expecting a date format input.\nPlease use the provided controls.",
+                               :tt_onLoad => "document.getElementById('Unknown').style.display = 'none';",
                                :helpText => "Mother birthdate",
                                :optional => true
                 ) %>
@@ -223,7 +235,6 @@
                                :id => "person_mother_current_ta",
                                :helpText => "Mother Current T/A or Area of Residence",
                                :tt_onUnload =>"__$('person_mother_current_village').setAttribute('ajaxURL','/search_by_village?ta='+__$('touchscreenInput' + tstCurrentPage).value+'&district='+__$('person_mother_current_district').value)"
-
                 ) %>
 
             <%= text_field_tag("person[mother][current_village]", nil,
@@ -241,7 +252,7 @@
                                :absolute_max => '45',
                                :max => '42',
                                :helpText => "Gestation age at birth in weeks",
-                               :tt_onLoad => "document.getElementById('iframe').contentDocument.getElementById('Unknown').style.display = 'none';",
+                               :tt_onLoad => "document.getElementById('Unknown').style.display = 'none';",
                                :tt_pageStyleClass => "NumbersWithUnknown nota",
                                :field_type => 'number',
                                :optional => true
@@ -254,7 +265,7 @@
                                :max => '6',
                                :absolute_max => '12',
                                :helpText => 'Number of prenatal visits',
-                               :tt_onLoad => "document.getElementById('iframe').contentDocument.getElementById('Unknown').style.display = 'none';",
+                               :tt_onLoad => "document.getElementById('Unknown').style.display = 'none';",
                                :tt_pageStyleClass => "NumbersWithUnknown nota",
                                :field_type => 'number',
                                :optional => true
@@ -267,7 +278,7 @@
                                :max => '6',
                                :absolute_max => '10',
                                :helpText => "Month of pregnancy prenatal care started",
-                               :tt_onLoad => "document.getElementById('iframe').contentDocument.getElementById('Unknown').style.display = 'none';",
+                               :tt_onLoad => "document.getElementById('Unknown').style.display = 'none';",
                                :tt_pageStyleClass => "NumbersWithUnknown nota",
                                :field_type => 'number',
                                :optional => true
@@ -283,7 +294,7 @@
                                :id => "person_number_of_children_born_alive_inclusive",
                                :helpText => "Number of children born to mother, including this child",
                                :tt_pageStyleClass => "NumbersWithUnknown nota",
-                               :tt_onLoad => "document.getElementById('iframe').contentDocument.getElementById('Unknown').style.display = 'none';",
+                               :tt_onLoad => "document.getElementById('Unknown').style.display = 'none';",
                                :field_type => 'number'
                 ) %>
 
@@ -292,7 +303,7 @@
                                :helpText => "Number of children born to mother, and still living",
                                :tt_pageStyleClass => "NumbersWithUnknown nota",
                                :field_type => 'number',
-                               :tt_onLoad => "document.getElementById('iframe').contentDocument.getElementById('Unknown').style.display = 'none';"
+                               :tt_onLoad => "document.getElementById('Unknown').style.display = 'none';"
                 ) %>
 
             <%= select_tag "person[level_of_education]", options_for_select([ "None", "Primary", "Secondary",
@@ -326,8 +337,10 @@
 
             <%= text_field_tag("person[father][birthdate]", nil,
                                :id => "father_birthdate",
+                               :validationRule => "^\\d{2}\\/[A-Z][a-z][a-z]\\/\\d{4}$",
+                               :validationMessage => "Expecting a date format input.\nPlease use the provided controls.",
                                :field_type => "date",
-                               :tt_onLoad => "__$('Unknown').style.display = 'none'",
+                               :tt_onLoad => "document.getElementById('Unknown').style.display = 'none';",
                                :helpText => "Father birthdate"
                 ) %>
 
@@ -416,8 +429,10 @@
 
             <%= text_field_tag("person[informant][birthdate]", nil,
                                :id => "informant_birthdate",
+                               :validationRule => "^\\d{2}\\/[A-Z][a-z][a-z]\\/\\d{4}$",
+                               :validationMessage => "Expecting a date format input.\nPlease use the provided controls.",
                                :field_type => "date",
-                               :tt_onLoad => "document.getElementById('iframe').contentDocument.getElementById('Unknown').style.display = 'none';",
+                               :tt_onLoad => "document.getElementById('Unknown').style.display = 'none';",
                                :helpText => "Informant birthdate"
                 ) %>
 
@@ -503,7 +518,9 @@
             <%= text_field_tag("date_reported", nil,
                                :id => "informant_report_date",
                                :field_type => "date",
-                               :tt_onLoad => "__$('Unknown').style.display = 'none'",
+                               :validationRule => "^\\d{2}\\/[A-Z][a-z][a-z]\\/\\d{4}$",
+                               :validationMessage => "Expecting a date format input.\nPlease use the provided controls.",
+                               :tt_onLoad => "document.getElementById('Unknown').style.display = 'none';",
                                :helpText => "Date of Reporting"
                 ) %>
             <%= select_tag "copy_mother_name", options_for_select([ "Yes", "No" ], nil),
@@ -515,10 +532,6 @@
 <% end %>
 
 <script>
-    function checkLoadedDate(date_value) {
-        console.log(Date.parse(date_value));
-    }
-
 	function reportingDate(){
 
 		commence = new Date(8 + '/' + 1 + '/' + 2015).format("YYYY-mm-dd");
