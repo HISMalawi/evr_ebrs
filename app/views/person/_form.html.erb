@@ -57,6 +57,8 @@
             <%= text_field_tag("person[first_name]", nil,
                                :id => "child_first_name",
                                :helpText => "First name",
+                               :validationRule => "^[a-zA-Z\\s\\r\\n]+$",
+                               :validationMessage => "Sorry! \n Use of special characters is not allowed.",
                                :word_min_length => 2,
                                :tt_onLoad => "checkSpace('child_first_name');validateNameLength('person','child_first_name',2)",
                                :tt_onUnload => 'setTimeout("checkChanges(' + 'child_first_name' + ')", 1000)'
@@ -64,7 +66,9 @@
 
             <%= text_field_tag("person[last_name]", nil,
                                :id => "child_last_name",
-                               :helpText => "Last name"
+                               :helpText => "Last name",
+                               :validationRule => "^[a-zA-Z\\s\\r\\n]+$",
+                               :validationMessage => "Sorry! \n Use of special characters is not allowed."
                 ) %>
 
             <%= text_field_tag("person[birthdate]", nil,
@@ -164,16 +168,22 @@
 
             <%= text_field_tag("person[mother][first_name]", nil,
                                :id => "mother_first_name",
+                               :validationRule => "^[a-zA-Z\\s\\r\\n]+$",
+                               :validationMessage => "Sorry! \n Use of special characters is not allowed.",
                                :helpText => "Mother first name"
                 ) %>
 
             <%= text_field_tag("person[mother][last_name]", nil,
                                :id => "mother_last_name",
+                               :validationRule => "^[a-zA-Z\\s\\r\\n]+$",
+                               :validationMessage => "Sorry! \n Use of special characters is not allowed.",
                                :helpText => "Mother surname"
                 ) %>
 
             <%= text_field_tag("person[mother][maiden_name]", nil,
                                :id => "mother_maiden_name",
+                               :validationRule => "^[a-zA-Z\\s\\r\\n]+$",
+                               :validationMessage => "Sorry! \n Use of special characters is not allowed.",
                                :optional => true,
                                :helpText => "Mother maiden name"
                 ) %>
@@ -327,11 +337,15 @@
 
             <%= text_field_tag("person[father][first_name]", nil,
                                :id => "father_first_name",
+                               :validationRule => "^[a-zA-Z\\s\\r\\n]+$",
+                               :validationMessage => "Sorry! \n Use of special characters is not allowed.",
                                :helpText => "Father first name"
                 ) %>
 
             <%= text_field_tag("person[father][last_name]", nil,
                                :id => "father_last_name",
+                               :validationRule => "^[a-zA-Z\\s\\r\\n]+$",
+                               :validationMessage => "Sorry! \n Use of special characters is not allowed.",
                                :helpText => "Father surname"
                 ) %>
 
@@ -419,11 +433,15 @@
 
             <%= text_field_tag("person[informant][first_name]", nil,
                                :id => "informant_first_name",
+                               :validationRule => "^[a-zA-Z\\s\\r\\n]+$",
+                               :validationMessage => "Sorry! \n Use of special characters is not allowed.",
                                :helpText => "Informant first name"
                 ) %>
 
             <%= text_field_tag("person[informant][last_name]", nil,
                                :id => "informant_last_name",
+                               :validationRule => "^[a-zA-Z\\s\\r\\n]+$",
+                               :validationMessage => "Sorry! \n Use of special characters is not allowed.",
                                :helpText => "Informant surname"
                 ) %>
 
