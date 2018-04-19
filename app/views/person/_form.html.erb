@@ -8,7 +8,7 @@
 <script>
 	var barcode_scan_url = "/person/barcode_scan";
 
-	function checkBarcode(id){
+	function checkBarcode(id,parent_type){
 		jQuery("#touchscreenInput" + tstCurrentPage).focus();
 		var value = __$("touchscreenInput" + tstCurrentPage).value;
 
@@ -20,14 +20,17 @@
 				url: barcode_scan_url + "?value=" + value,
 				success: function(result){
 					data = JSON.parse(result);
-					jQuery(".inputFrameClass").css({
-						"height" : "25px"	
+					jQuery('.inputFrameClass').css({
+						"height" : "25px"
 					});
-					console.log(data[0]);
-					iTable.init(data[0], jQuery(".inputFrameClass").parent())
+					console.log(data[0][0].gender);
+
+					// if a table for results already exist then clear it and populate again
+					iTable.reset();
+					iTable.init(data[0], jQuery('.inputFrameClass').parent());
 				},
 				error: function(){
-					__$("touchscreenInput" + tstCurrentPage).value = "";
+					__$("touchscreenInput" + tstCurrentPage).value = '';
 					showMessage("Sorry, that person was not found. Click next to Register");
 				}
 			})
@@ -164,7 +167,7 @@
                                :optional => "true",
                                :helpText => "Scan mother barcode",
                                :tstPageStyleClass => "NoKeyboard",
-                               :tt_onLoad => "__$('keyboard').style.display = 'none'; checkBarcode('mother_barcode')") %>
+                               :tt_onLoad => "__$('keyboard').style.display = 'none'; checkBarcode('mother_barcode','mother')") %>
 
             <%= text_field_tag("person[mother][first_name]", nil,
                                :id => "mother_first_name",
@@ -333,7 +336,7 @@
                                :optional => "true",
                                :helpText => "Scan father barcode",
                                :tstPageStyleClass => "NoKeyboard",
-                               :tt_onLoad => "__$('keyboard').style.display = 'none'; checkBarcode('mother_barcode')") %>
+                               :tt_onLoad => "__$('keyboard').style.display = 'none'; checkBarcode('father_barcode',father)") %>
 
             <%= text_field_tag("person[father][first_name]", nil,
                                :id => "father_first_name",

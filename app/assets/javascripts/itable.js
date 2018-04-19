@@ -16,10 +16,17 @@ sample = {
 };
 
 iTable = {
-	init: function(hash, parent) {
+	init: function(hash, parent, parent_type) {
 		var table = document.createElement("table");
-		table.style.border = '2px black solid';
-		table.style.width = '95%';
+		table.style.color = 'darkslategray';
+		table.id = 'results_table';
+		table.padding = '9px';
+		table.align = 'center';
+		table.style.fontFamily = 'Nimbus Sans L, Arial Narrow, sans-serif';
+		table.style.border = '0.1px dotted lightblue';
+		table.style.width = '90%';
+		table.style.left = '5%';
+		table.style.right = '5%';
 
 		var caption = document.createElement("caption");
 		var number_of_records = hash.length;
@@ -27,7 +34,12 @@ iTable = {
 		table.appendChild(caption);
 
 		for(var key in hash){
-
+			if((parent_type === 'mother') && (hash[0]['gender'] === 'M')) {
+				break;
+			}
+			if((parent_type === 'father') && (hash[0]['gender'] === 'F')) {
+				break;
+			}
 			// Create Main Row for Record
 			var person_row = document.createElement("tr");
 			table.appendChild(person_row);
@@ -43,6 +55,9 @@ iTable = {
 
 			var person_header_first_name = document.createElement("td");
 			person_header_first_name.innerHTML = 'First Name';
+			person_header_first_name.style.fontSize = '1.1em';
+			person_header_first_name.style.padding = '9px';
+			person_header_first_name.style.borderBottom = '0.1px dotted lightblue';
 			person_header_first_name_row.appendChild(person_header_first_name);
 
 			// -- row 2
@@ -51,6 +66,9 @@ iTable = {
 
 			var person_header_last_name = document.createElement("td");
 			person_header_last_name.innerHTML = 'Last Name';
+			person_header_last_name.style.fontSize = '1.1em';
+			person_header_last_name.style.padding = '9px';
+			person_header_last_name.style.borderBottom = '0.1px dotted lightblue';
 			person_header_last_name_row.appendChild(person_header_last_name);
 
 			// -- row 3
@@ -60,6 +78,9 @@ iTable = {
 
 			var person_header_gender = document.createElement("td");
 			person_header_gender.innerHTML = 'Gender';
+			person_header_gender.style.fontSize = '1.1em';
+			person_header_gender.style.padding = '9px';
+			person_header_gender.style.borderBottom = '0.1px dotted lightblue';
 			person_header_gender_row.appendChild(person_header_gender);
 
 			// -- row 4
@@ -68,6 +89,9 @@ iTable = {
 
 			var person_header_birthdate = document.createElement("td");
 			person_header_birthdate.innerHTML = 'Birthdate';
+			person_header_birthdate.style.fontSize = '1.1em';
+			person_header_birthdate.style.padding = '9px';
+			person_header_birthdate.style.borderBottom = '0.1px dotted lightblue';
 			person_header_birthdate_row.appendChild(person_header_birthdate);
 
 			// -- row 5
@@ -77,6 +101,9 @@ iTable = {
 
 			var person_header_home_address = document.createElement("td");
 			person_header_home_address.innerHTML = 'Home Address';
+			person_header_home_address.style.fontSize = '1.1em';
+			person_header_home_address.style.padding = '9px';
+			person_header_home_address.style.borderBottom = '0.1px dotted lightblue';
 			person_header_home_address_row.appendChild(person_header_home_address);
 
 			// -- row 6
@@ -85,6 +112,9 @@ iTable = {
 
 			var person_header_current_address = document.createElement("td");
 			person_header_current_address.innerHTML = 'Current Address';
+			person_header_current_address.style.fontSize = '1.1em';
+			person_header_current_address.style.padding = '9px';
+			person_header_current_address.style.borderBottom = '0.1px dotted lightblue';
 			person_header_current_address_row.appendChild(person_header_current_address);
 
 			// ----------- end of column 1 (person headers)
@@ -100,6 +130,9 @@ iTable = {
 
 			var person_details_first_name = document.createElement("td");
 			person_details_first_name.innerHTML = hash[0]['first_name'];
+			person_details_first_name.style.fontSize = '1.1em';
+			person_details_first_name.style.padding = '9px';
+			person_details_first_name.style.borderBottom = '0.1px dotted lightblue';
 			person_details_first_name_row.appendChild(person_details_first_name);
 
 			// -- row 2
@@ -108,6 +141,9 @@ iTable = {
 
 			var person_details_last_name = document.createElement("td");
 			person_details_last_name.innerHTML = hash[0]['last_name'];
+			person_details_last_name.style.fontSize = '1.1em';
+			person_details_last_name.style.padding = '9px';
+			person_details_last_name.style.borderBottom = '0.1px dotted lightblue';
 			person_details_last_name_row.appendChild(person_details_last_name);
 
 			// -- row 3
@@ -117,6 +153,9 @@ iTable = {
 
 			var person_details_gender = document.createElement("td");
 			person_details_gender.innerHTML = (hash[0]['gender']==='F')?'Female':'Male';
+			person_details_gender.style.fontSize = '1.1em';
+			person_details_gender.style.padding = '9px';
+			person_details_gender.style.borderBottom = '0.1px dotted lightblue';
 			person_details_gender_row.appendChild(person_details_gender);
 
 			// -- row 4
@@ -125,15 +164,24 @@ iTable = {
 
 			var person_details_birthdate = document.createElement("td");
 			person_details_birthdate.innerHTML = hash[0]['birth_date'];
+			person_details_birthdate.style.fontSize = '1.1em';
+			person_details_birthdate.style.padding = '9px';
+			person_details_birthdate.style.borderBottom = '0.1px dotted lightblue';
 			person_details_birthdate_row.appendChild(person_details_birthdate);
 
 			// -- row 5
 			var person_details_home_address_row = document.createElement("tr");
 			person_details_home_address_row.style.backgroundColor = 'lightblue';
+			person_details_home_address_row.style.fontSize = '1.1em';
+			person_details_home_address_row.style.padding = '9px';
+			person_details_home_address_row.style.borderBottom = '0.1px dotted lightblue';
 			person_details_td.appendChild(person_details_home_address_row);
 
 			var person_details_home_address = document.createElement("td");
-			person_details_home_address.innerHTML = hash[0]['home_village'] + ',' + hash[0]['home_ta'] + ',' + hash[0]['home_district'];
+			person_details_home_address.innerHTML = (hash[0]['home_village'] === null?'':hash[0]['home_village']+',') + (hash[0]['home_ta'] === null?'':hash[0]['home_ta']+',') + (hash[0]['home_district'] === null?'':hash[0]['home_district']);
+			person_details_home_address.style.fontSize = '1.1em';
+			person_details_home_address.style.padding = '9px';
+			person_details_home_address.style.borderBottom = '0.1px dotted lightblue';
 			person_details_home_address_row.appendChild(person_details_home_address);
 
 			// -- row 6
@@ -141,7 +189,10 @@ iTable = {
 			person_details_td.appendChild(person_details_current_address_row);
 
 			var person_details_current_address = document.createElement("td");
-			person_details_current_address.innerHTML = hash[0]['current_village'] + ',' + hash[0]['current_ta'] + ',' + hash[0]['current_district'];
+			person_details_current_address.innerHTML = (hash[0]['current_village'] === null?'':hash[0]['current_village']+',') + (hash[0]['current_ta'] === null?'':hash[0]['current_ta']+',') + (hash[0]['current_district'] === null?'':hash[0]['current_district']);
+			person_details_current_address.style.fontSize = '1.1em';
+			person_details_current_address.style.padding = '9px';
+			person_details_current_address.style.borderBottom = '0.1px dotted lightblue';
 			person_details_current_address_row.appendChild(person_details_current_address);
 
 			// ----------- end of column 2 (person details)
@@ -157,7 +208,7 @@ iTable = {
 			person_action_td_row.appendChild(person_action_td_row_td);
 
 			var person_action_select_button = document.createElement("button");
-			var person_action_select_button_text = document.createTextNode("Select");
+			var person_action_select_button_text = document.createTextNode("Select & Proceed");
 			person_action_select_button.appendChild(person_action_select_button_text);
 			person_action_select_button.onmousedown = function() {
 				var person_type = (hash[0]['gender']==='F')?'Mother':'Father';
@@ -178,6 +229,13 @@ iTable = {
 		}
 		parent.append(table);
 		return table;
+	},
+	reset: function() {
+		__$("touchscreenInput" + tstCurrentPage).value = '';
+		if(document.getElementById('results_table')){
+			// document.getElementById('results_table').innerHTML = '';
+			document.getElementById('results_table tr').remove();
+		}
 	}
 };
 
