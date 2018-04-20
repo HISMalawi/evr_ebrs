@@ -79,6 +79,7 @@
                                :field_type => "date",
                                :allowFreeText => true,
                                :tt_onLoad => "__$('Unknown').style.display = 'none'",
+                               :tt_onUnLoad => "checkBirthDate(__$('child_birthdate').value)",
                                :helpText => "Birthdate",
                                :validationRule => "^\\d{2}\\/[A-Z][a-z][a-z]\\/\\d{4}$",
                                :validationMessage => "Expecting a date format input.\nPlease use the provided controls.",
@@ -140,6 +141,7 @@
             <%= select_tag "person[date_of_marriage]", options_for_select([ "Yes", "No" ], nil),
                            :id => "person_date_of_marriage",
                            :helpText => "Date of marriage",
+                           :tt_onUnLoad => "checkBirthDate(__$('person_date_of_marriage').value)",
                            :field_type => "date",
                            :absolute_max => Date.today.strftime('%Y/%m/%d'),
                            :condition => "__$('person_parents_married_to_each_other').value == 'Yes'",
@@ -194,6 +196,7 @@
             <%= text_field_tag("person[mother][birthdate]", nil,
                                :id => "mother_birthdate",
                                :field_type => "date",
+                               :tt_onUnLoad => "checkChildBirthDate(__$('mother_birthdate').value)",
                                :validationRule => "^\\d{2}\\/[A-Z][a-z][a-z]\\/\\d{4}$",
                                :validationMessage => "Expecting a date format input.\nPlease use the provided controls.",
                                :tt_onLoad => "document.getElementById('Unknown').style.display = 'none';",
@@ -354,6 +357,7 @@
 
             <%= text_field_tag("person[father][birthdate]", nil,
                                :id => "father_birthdate",
+                               :tt_onUnLoad => "checkChildBirthDate(__$('father_birthdate').value)",
                                :validationRule => "^\\d{2}\\/[A-Z][a-z][a-z]\\/\\d{4}$",
                                :validationMessage => "Expecting a date format input.\nPlease use the provided controls.",
                                :field_type => "date",
@@ -450,6 +454,7 @@
 
             <%= text_field_tag("person[informant][birthdate]", nil,
                                :id => "informant_birthdate",
+                               :tt_onUnLoad => "checkBirthDate(__$('informant_birthdate').value)",
                                :validationRule => "^\\d{2}\\/[A-Z][a-z][a-z]\\/\\d{4}$",
                                :validationMessage => "Expecting a date format input.\nPlease use the provided controls.",
                                :field_type => "date",
@@ -553,6 +558,37 @@
 <% end %>
 
 <script>
+    function checkBirthDate(passed_date) {
+
+    	var today_date = new Date();
+    	var check_date = new Date(passed_date);
+
+    	if(check_date > today_date){
+    		showMessage('Make sure the date is not greater than today.');
+		    gotoPage(tstCurrentPage - 1);
+        }
+    }
+
+    function checkChildBirthDate(passed_date) {
+	    var child_birthdate = new Date(__$('child_birthdate').value);
+	    var check_date_value = new Date(passed_date);
+	    var year_difference = diff_years(child_birthdate, check_date_value);
+
+    	if(parseInt(year_difference) < parseInt(11)){
+		    showMessage('Parent should be atleast 11 years older than the child.');
+		    gotoPage(tstCurrentPage - 1);
+        }
+    }
+
+    function diff_years(dt2, dt1)
+    {
+
+	    var diff =(dt2.getTime() - dt1.getTime()) / 1000;
+	    diff /= (60 * 60 * 24);
+	    return Math.abs(Math.round(diff/365.25));
+
+    }
+
 	function reportingDate(){
 
 		commence = new Date(8 + '/' + 1 + '/' + 2015).format("YYYY-mm-dd");
