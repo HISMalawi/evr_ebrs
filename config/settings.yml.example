@@ -1,7 +1,8 @@
 application_mode: FC #FC|DC
-location_id: 260  #facility_id |district_id [location_id of the health facility or district_id in location table]
+location_id: 35077  #facility_id |district_id [location_id of the health facility or district_id in location table]
+scan_from_remote: true
 enable_role_privileges: true
-remote_url: http://192.168.5.89:5000
+remote_url: http://192.168.5.13:5000
 duplicate_precision: 80
 potential_search: false
 app_gate_url: 
