@@ -490,7 +490,6 @@ class PersonController < ApplicationController
   end
 
   def create
-    
     type_of_birth = params[:person][:type_of_birth]
     
      if type_of_birth == 'Twin'
@@ -504,15 +503,71 @@ class PersonController < ApplicationController
          params[:person][:type_of_birth] = 'First Triplet'                                         
      end
 
-     
     @person = PersonService.create_record(params)
 
-    #To be contued
-    if @person.present? && SETTINGS['potential_search']
-      SimpleElasticSearch.add(person_for_elastic_search(@person,params))
-    else
+    if SETTINGS['scan_from_dde'].to_s == "true"
 
+      link  = ""
+
+    elsif SETTINGS['scan_from_remote'].to_s == "true"
+
+      link = "http://admin:test@192.168.18.149:3000/people/create_remote"
+
+      birthdate = params['person']['birthdate']
+
+      params['birth_day'] = birthdate.to_datetime.day
+      params['birth_month'] = birthdate.to_datetime.month
+      params['birth_year'] = birthdate.to_datetime.year
+
+      demographics_hash = {
+          'occupation' =>"#{(params['attributes']['occupation'] rescue [])}",
+          'education_level'=>"#{(params['person']['level_of_education'] rescue [])}",
+          'religion'=>"#{(params['attributes']['religion'] rescue [])}",
+          'patient_year'=>"#{params['birth_year'] rescue []}",
+          'patient'=> {
+              'gender' =>"#{params['person']['gender']}",
+              'birthplace' =>"#{params['addresses']['address2'] rescue []}",
+              'creator' => 1,
+              'changed_by' => 1
+          },
+          'p_address'=> {
+              'identifier' => "#{params['addresses']['state_province'] rescue []}"},
+          'home_phone' => {
+              'identifier' => "#{(params['attributes']['home_phone_number'] rescue [])}"},
+          'cell_phone' => {
+              'identifier' => "#{(params['attributes']['cell_phone_number'] rescue [])}"},
+          'office_phone' => {
+              'identifier' => "#{(params['attributes']['office_phone_number'] rescue [])}"},
+          'patient_id' => '',
+          'patient_day' => "#{params['birth_day']}",
+          'patientaddress' => {'city_village' => "#{new_params['addresses']['city_village'] rescue []}"},
+          'patient_name' => {
+              'family_name' => "#{params['person']['first_name']}",
+              'given_name' => "#{params['person']['last_name']}",
+              'creator' => 1
+          },
+          'patient_month' => "#{params['birth_month']}",
+          'patient_age' =>{
+              'age_estimate' => "#{params['age_estimate']}"
+          },
+          'age' =>{
+              'identifier' =>''
+          },
+          'current_ta' =>{
+              'identifier' => "#{params['addresses']['county_district'] rescue []}"
+          }
+      }
     end
+
+    data  = JSON.parse(RestClient.post(link, demographics_hash.to_json, :content_type => "application/json"))
+
+    raise data.inspect
+    #To be contued
+    #if @person.present? && SETTINGS['potential_search']
+    #  SimpleElasticSearch.add(person_for_elastic_search(@person,params))
+    #else
+    #
+    #end
   
 
     if ["First Twin", "First Triplet", "Second Triplet"].include?(type_of_birth.strip)
