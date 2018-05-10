@@ -510,8 +510,7 @@ class PersonController < ApplicationController
       link  = ""
 
     elsif SETTINGS['scan_from_remote'].to_s == "true"
-
-      link = "http://admin:test@192.168.18.149:3000/people/create_remote"
+      link = "http://#{SETTINGS['remote_user_name']}:#{SETTINGS['remote_user_password']}@#{SETTINGS['remote_url']}/people/create_remote"
 
       birthdate = params['person']['birthdate']
 
@@ -559,16 +558,28 @@ class PersonController < ApplicationController
       }
     end
 
-    data  = JSON.parse(RestClient.post(link, demographics_hash.to_json, :content_type => "application/json"))
+    remote_person_record  = JSON.parse(RestClient.post(link, demographics_hash.to_json, :content_type => "application/json"))
 
-    raise data.inspect
+    child_national_id = remote_person_record['person']['patient']['identifiers']['National id'].inspect
+
+    child_id = Person.last.id
+    child_identifier_type_id = PersonIdentifierType.find_by_name('Barcode Number').person_identifier_type_id
+
+    PersonIdentifier.create(
+        person_id: child_id,
+        person_identifier_type_id: child_identifier_type_id,
+        value: child_national_id
+    )
+
     #To be contued
-    #if @person.present? && SETTINGS['potential_search']
-    #  SimpleElasticSearch.add(person_for_elastic_search(@person,params))
-    #else
-    #
-    #end
-  
+    if @person.present? && SETTINGS['potential_search']
+     SimpleElasticSearch.add(person_for_elastic_search(@person,params))
+    else
+
+    end
+
+    #print barcode
+    print_and_redirect("/person/child_id_label?child_id=#{child_id}", '/view_cases') and return
 
     if ["First Twin", "First Triplet", "Second Triplet"].include?(type_of_birth.strip)
       
@@ -588,6 +599,40 @@ class PersonController < ApplicationController
     end
 
   end
+
+  # added for printing (added for eVR)
+  def child_id_label
+    print_string = child_label(params[:child_id])
+
+    send_data(print_string,:type=>"application/label; charset=utf-8", :stream=> false, :filename=>"#{params[:child_id]}#{rand(10000)}.lbl", :disposition => "inline")
+  end
+
+  def child_label(child_id)
+
+    @child = Person.find(child_id)
+    @child_national_id = PersonIdentifier.find_by_person_id(@child.id)
+    sex =  @child.gender.match(/F/i) ? "(F)" : "(M)"
+
+    place_of_birth = @child.hospital_of_birth  rescue ""
+    place_of_birth = @child.place_of_birth rescue "" if place_of_birth.blank?
+
+    label = ZebraPrinter::StandardLabel.new
+    label.font_size = 2
+    label.font_horizontal_multiplier = 1
+    label.font_vertical_multiplier = 1
+    label.left_margin = 50
+    label.draw_barcode(50,180,0,1,5,15,120,false,"00000000")
+    label.draw_multi_text("ID Number: 0000000")
+    label.draw_multi_text("Child: #{@child.first_name + ' ' + @child.last_name} #{sex}")
+    label.draw_multi_text("DOB: #{@child.birthdate}")
+    label.draw_multi_text("Birth Place: #{place_of_birth + '/' + @child.place_of_birth}")
+    label.draw_multi_text("Mother: #{(@child.mother.first_name rescue '') + ' ' + (@child.mother.last_name rescue '')}")
+    label.draw_multi_text("Child Informant: #{(@child.informant.first_name rescue '') + ' ' + (@child.informant.last_name rescue '')}")
+    label.draw_multi_text("Date of Reporting: #{@child.acknowledgement_of_receipt_date.strftime('%d/%B/%Y') rescue ''}")
+    label.print(1)
+
+  end
+  #-------------------------------
 
   def update_person
 

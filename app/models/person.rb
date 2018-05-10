@@ -148,7 +148,7 @@ class Person < ActiveRecord::Base
     end
 
     def place_of_birth
-      PersonBirthDetail.find_by_person_id(self.id).birth_place.name
+      PersonBirthDetail.find_by_person_id(self.id).birth_place.name rescue ""
     end   
 
     def hospital_of_birth

@@ -1,7 +1,10 @@
 application_mode: FC #FC|DC
 location_id: 35077  #facility_id |district_id [location_id of the health facility or district_id in location table]
-scan_from_remote: true
+scan_from_dde: false
 enable_role_privileges: true
+scan_from_remote: true
+remote_user_name: username
+remote_user_password: password
 remote_url: http://192.168.5.13:5000
 duplicate_precision: 80
 potential_search: false

@@ -91,6 +91,11 @@ Rails.application.routes.draw do
   get 'records/:status' => 'person#records'
 
   get "view_sync" =>"person#view_sync"
+
+  ##### printing routes
+  get '/person/child_id_label'
+  # ------------------------
+
   ########################### (create record form) routes
 
   get '/new_registration' => "dc#new_registration"
