@@ -177,4 +177,9 @@ class Person < ActiveRecord::Base
       type_id = PersonAttributeType.where(name: type).last.id rescue nil
       PersonAttribute.where(person_id: self.person_id, person_attribute_type_id: type_id, voided: 0).last.value rescue nil
     end
+
+    # added at time of eBRS for eVR
+    def acknowledgement_of_receipt_date
+      PersonBirthDetail.find_by_person_id(self.id).acknowledgement_of_receipt_date rescue ""
+    end
 end

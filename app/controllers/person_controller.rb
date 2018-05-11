@@ -562,7 +562,7 @@ class PersonController < ApplicationController
 
     child_national_id = remote_person_record['person']['patient']['identifiers']['National id'].inspect
 
-    child_id = Person.last.id
+    child_id = @person.person_id
     child_identifier_type_id = PersonIdentifierType.find_by_name('Barcode Number').person_identifier_type_id
 
     PersonIdentifier.create(
@@ -610,7 +610,8 @@ class PersonController < ApplicationController
   def child_label(child_id)
 
     @child = Person.find(child_id)
-    @child_national_id = PersonIdentifier.find_by_person_id(@child.id)
+
+    @child_national_id = PersonIdentifier.find_by_person_id(@child.id).value.gsub('"','')
     sex =  @child.gender.match(/F/i) ? "(F)" : "(M)"
 
     place_of_birth = @child.hospital_of_birth  rescue ""
@@ -621,8 +622,8 @@ class PersonController < ApplicationController
     label.font_horizontal_multiplier = 1
     label.font_vertical_multiplier = 1
     label.left_margin = 50
-    label.draw_barcode(50,180,0,1,5,15,120,false,"00000000")
-    label.draw_multi_text("ID Number: 0000000")
+    label.draw_barcode(50,180,0,1,5,15,120,false,"#{@child_national_id}")
+    label.draw_multi_text("ID Number: #{@child_national_id}")
     label.draw_multi_text("Child: #{@child.first_name + ' ' + @child.last_name} #{sex}")
     label.draw_multi_text("DOB: #{@child.birthdate}")
     label.draw_multi_text("Birth Place: #{place_of_birth + '/' + @child.place_of_birth}")
