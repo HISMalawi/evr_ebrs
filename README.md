@@ -56,6 +56,8 @@ what to configure in settings.yml
     application_mode: FC #meanig Facility Application
     location_id: 35077  #facility_id
     scan_from_remote: true #to allow scanning from ART
+    remote_user_name: username #username of an existing user in the remote ART application
+    remote_user_password: password #password of an existing user in the remote ART application
     enable_role_privileges: true 
     remote_url: http://192.168.5.89:5000 #url to ART application to use 
     
