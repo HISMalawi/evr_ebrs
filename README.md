@@ -72,7 +72,7 @@ Run the command
 If successful with installing dependencies above, run the following to setup the system. Replace "RAILS_ENVIRONMENT" 
 with the environment you are setting up the application in. i.e. production or development
 
-    ./setup.sh RAILS_ENVIRONMENT /var/www/metadata.sql
+    ./setup.sh RAILS_ENVIRONMENT metadata.sql
 
 Deployment
 -
