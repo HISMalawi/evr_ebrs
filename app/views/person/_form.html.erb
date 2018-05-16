@@ -62,7 +62,6 @@
                                :validationRule => "^[a-zA-Z\\s\\r\\n]+$",
                                :validationMessage => "Sorry! \n Use of special characters is not allowed.",
                                :word_min_length => 2,
-                               :tt_onLoad => "checkSpace('child_first_name');validateNameLength('person','child_first_name',2)",
                                :tt_onUnload => 'setTimeout("checkChanges(' + 'child_first_name' + ')", 1000)'
                 ) rescue '' %>
 
@@ -1370,7 +1369,7 @@
 		__$('person_copy_mother_name').setAttribute('condition', "__$('person_parents_married_to_each_other').value.trim() == 'No' && __$('person_court_order_attached').value.trim() == 'No' && __$('person_parents_signed').value.trim() == 'No' &&  __$('person_mother_last_name').value.trim().toLowerCase() != __$('person_last_name').value.trim().toLowerCase()");
 	}
 
-	init();
+	//init();
 
 	summaryHash = {
 		"Child Name" : ["person_first_name","person_middle_name","person_last_name"],
