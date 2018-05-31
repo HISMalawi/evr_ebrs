@@ -94,6 +94,7 @@ Rails.application.routes.draw do
 
   ##### printing routes
   get '/person/child_id_label'
+  get '/person/reprint_child_id_label/:child_id' => 'person#reprint_child_id_label' # for reprinting
   # ------------------------
 
   ########################### (create record form) routes

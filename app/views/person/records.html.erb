@@ -231,7 +231,7 @@ function initTable(){
 
                             json['data'][i][last_index] +=
                                 '<td class="action-button"> ' +
-                                '<div onclick="javascript:location=\'/person/child_id_label?reprint=true&child_id=' + person_id + ' \'"     ' +
+                                '<div onclick="javascript:location=\'/person/reprint_child_id_label/' + person_id + ' \'"     ' +
                                 '    class="action-btn btn btn-success btn-xs">' +
                                 '<%= image_tag "print.png", class: 'btn-images' %></div>' +
                                 '</td>';

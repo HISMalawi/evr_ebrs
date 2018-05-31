@@ -601,6 +601,13 @@ class PersonController < ApplicationController
   end
 
   # added for printing (added for eVR)
+
+  # reprinting child label
+  def reprint_child_id_label
+    child_id = params[:child_id]
+    print_and_redirect("/person/child_id_label?child_id=#{child_id}", '/view_cases') and return
+  end
+
   def child_id_label
     print_string = child_label(params[:child_id])
 
