@@ -88,8 +88,8 @@ class Report < ActiveRecord::Base
       ).as_json.last['total'] rescue 0
       reg_type[type]['Female'] = female
 
-      total_male = total_male + male
-      total_female = total_female + female
+      total_male = total_male.to_i + male.to_i rescue 0
+      total_female = total_female.to_i + female.to_i rescue 0
       
     end
 
