@@ -221,13 +221,20 @@ function initTable(){
                                             '<%= image_tag "view.png", class: 'btn-images' %></div>' +
                                     '</td>';
 
-                            json['data'][i][last_index] +=
+                            /**json['data'][i][last_index] +=
                                     '<td class="Edit_Record action-button"> ' +
-                                    '<div onclick="javascript:location=\'/person/' + person_id + '/edit?next_path=<%= request.path%> \'"     ' +
-                                    'url=\'/person/' + person_id + '/edit?next_path=<%= request.path%> \'"     ' +
+                                    '<div onclick="javascript:location=\'/person/' + person_id + '/edit?next_path=<%#= request.path%> \'"     ' +
+                                    'url=\'/person/' + person_id + '/edit?next_path=<%#= request.path%> \'"     ' +
                                     '    class="action-btn btn btn-success btn-xs">' +
-                                    '<%= image_tag "edit.png", class: 'btn-images' %></div>' +
-                                    '</td>';
+                                    '<%#= image_tag "edit.png", class: 'btn-images' %></div>' +
+                                    '</td>';**/
+
+                            json['data'][i][last_index] +=
+                                '<td class="action-button"> ' +
+                                '<div onclick="javascript:location=\'/person/child_id_label?reprint=true&child_id=' + person_id + ' \'"     ' +
+                                '    class="action-btn btn btn-success btn-xs">' +
+                                '<%= image_tag "print.png", class: 'btn-images' %></div>' +
+                                '</td>';
 
                             json['data'][i][last_index] +=
                                     '<td class="sync" person_id='+ person_id + ' id='+ person_id + '> ' +

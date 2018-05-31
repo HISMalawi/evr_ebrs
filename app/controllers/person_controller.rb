@@ -611,7 +611,7 @@ class PersonController < ApplicationController
 
     @child = Person.find(child_id)
 
-    @child_national_id = PersonIdentifier.find_by_person_id(@child.id).value.gsub('"','')
+    @child_national_id = PersonIdentifier.find_by_person_id(@child.id).value.gsub('"','') rescue nil
     sex =  @child.gender.match(/F/i) ? "(F)" : "(M)"
 
     place_of_birth = @child.hospital_of_birth  rescue ""
