@@ -72,7 +72,7 @@
         function setup(active_id){
             form =  window.frames['iframe'].contentDocument.getElementById("new_person_name");
             if(!form){
-                setTimeout("setup()", 400);
+                setTimeout("setup()", 500);
             }else {
                 var sections = form.getElementsByTagName("section")
                 var table = document.getElementById("table");
