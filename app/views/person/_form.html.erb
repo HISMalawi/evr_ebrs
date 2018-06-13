@@ -61,8 +61,7 @@
                                :helpText => "First name",
                                :validationRule => "^[a-zA-Z\\s\\r\\n]+$",
                                :validationMessage => "Sorry! \n Use of special characters is not allowed.",
-                               :word_min_length => 2,
-                               :tt_onUnload => 'setTimeout("checkChanges(' + 'child_first_name' + ')", 1000)'
+                               :word_min_length => 2
                 ) rescue '' %>
 
             <%= text_field_tag("person[last_name]", nil,
@@ -221,20 +220,18 @@
                                :id => "person_mother_home_district",
                                :helpText => "Mother Home District",
                                :ajaxURL  => "/search_by_district?search=",
-                               :tt_onUnload =>"__$('person_mother_home_ta').setAttribute('ajaxURL','/search_by_ta?district='+__$('touchscreenInput' + tstCurrentPage).value)"
+                               :tt_onUnload =>"__$('person_mother_home_ta').setAttribute('ajaxURL','/search_by_ta?district='+__$('touchscreenInput' + tstCurrentPage).value+'&search=')"
                 ) %>
 
             <%= text_field_tag("person[mother][home_ta]", nil,
                                :id => "person_mother_home_ta",
                                :helpText => "Mother Home T/A or Area of Residence",
-                               :ajaxURL  => "/search_by_ta?search=",
-                               :tt_onUnload =>"__$('person_mother_home_village').setAttribute('ajaxURL','/search_by_village?ta='+__$('touchscreenInput' + tstCurrentPage).value+'&district='+__$('person_mother_home_district').value)"
+                               :tt_onUnload =>"__$('person_mother_home_village').setAttribute('ajaxURL','/search_by_village?ta='+__$('touchscreenInput' + tstCurrentPage).value+'&district='+__$('person_mother_home_district').value+'&search=')"
                 ) %>
 
             <%= text_field_tag("person[mother][home_village]", nil,
                                :id => "person_mother_home_village",
                                :helpText => "Mother Home Village/Town",
-                               :ajaxURL  => "/search_by_village?search="
                 ) %>
         </sub>
 
@@ -243,20 +240,18 @@
                                :id => "person_mother_current_district",
                                :helpText => "Mother Current District",
                                :ajaxURL  => "/search_by_district?search=",
-                               :tt_onUnload =>"__$('person_mother_current_ta').setAttribute('ajaxURL','/search_by_ta?district='+__$('touchscreenInput' + tstCurrentPage).value)"
+                               :tt_onUnload =>"__$('person_mother_current_ta').setAttribute('ajaxURL','/search_by_ta?district='+__$('touchscreenInput' + tstCurrentPage).value+'&search=')"
                 ) %>
 
             <%= text_field_tag("person[mother][current_ta]", nil,
                                :id => "person_mother_current_ta",
                                :helpText => "Mother Current T/A or Area of Residence",
-                               :ajaxURL  => "/search_by_ta?search=",
-                               :tt_onUnload =>"__$('person_mother_current_village').setAttribute('ajaxURL','/search_by_village?ta='+__$('touchscreenInput' + tstCurrentPage).value+'&district='+__$('person_mother_current_district').value)"
+                               :tt_onUnload =>"__$('person_mother_current_village').setAttribute('ajaxURL','/search_by_village?ta='+__$('touchscreenInput' + tstCurrentPage).value+'&district='+__$('person_mother_current_district').value+'&search=')"
                 ) %>
 
             <%= text_field_tag("person[mother][current_village]", nil,
                                :id => "person_mother_current_village",
-                               :helpText => "Mother Current Village/Town",
-                               :ajaxURL  => "/search_by_village?search="
+                               :helpText => "Mother Current Village/Town"
                 ) %>
         </sub>
 
@@ -384,20 +379,18 @@
                                :id => "person_father_home_district",
                                :helpText => "Father Home District",
                                :ajaxURL  => "/search_by_district?search=",
-                               :tt_onUnload =>"__$('person_father_home_ta').setAttribute('ajaxURL','/search_by_ta?district='+__$('touchscreenInput' + tstCurrentPage).value)"
+                               :tt_onUnload =>"__$('person_father_home_ta').setAttribute('ajaxURL','/search_by_ta?district='+__$('touchscreenInput' + tstCurrentPage).value+'&search=')"
                 ) %>
 
             <%= text_field_tag("person[father][home_ta]", nil,
                                :id => "person_father_home_ta",
                                :helpText => "Father Home T/A or Area of Residence",
-                               :ajaxURL  => "/search_by_ta?search=",
-                               :tt_onUnload =>"__$('person_father_home_village').setAttribute('ajaxURL','/search_by_village?ta='+__$('touchscreenInput' + tstCurrentPage).value+'&district='+__$('person_father_home_district').value)"
+                               :tt_onUnload =>"__$('person_father_home_village').setAttribute('ajaxURL','/search_by_village?ta='+__$('touchscreenInput' + tstCurrentPage).value+'&district='+__$('person_father_home_district').value+'&search=')"
                 ) %>
 
             <%= text_field_tag("person[father][home_village]", nil,
                                :id => "person_father_home_village",
-                               :helpText => "Father Home Village/Town",
-                               :ajaxURL  => "/search_by_village?search="
+                               :helpText => "Father Home Village/Town"
                 ) %>
         </sub>
 
@@ -406,22 +399,20 @@
                                :id => "person_father_current_district",
                                :helpText => "Father Current District",
                                :ajaxURL  => "/search_by_district?search=",
-                               :tt_onUnload =>"__$('person_father_current_ta').setAttribute('ajaxURL','/search_by_ta?district='+__$('touchscreenInput' + tstCurrentPage).value)"
+                               :tt_onUnload =>"__$('person_father_current_ta').setAttribute('ajaxURL','/search_by_ta?district='+__$('touchscreenInput' + tstCurrentPage).value+'&search=')"
                 ) %>
 
             <%= text_field_tag("person[father][current_ta]", nil,
                                :id => "person_father_current_ta",
                                :helpText => "Father Current T/A or Area of Residence",
-                               :ajaxURL  => "/search_by_ta?search=",
-                               :tt_onUnload =>"__$('person_father_current_village').setAttribute('ajaxURL','/search_by_village?ta='+__$('touchscreenInput' + tstCurrentPage).value+'&district='+__$('person_father_current_district').value)"
+                               :tt_onUnload =>"__$('person_father_current_village').setAttribute('ajaxURL','/search_by_village?ta='+__$('touchscreenInput' + tstCurrentPage).value+'&district='+__$('person_father_current_district').value+'&search=')"
 
 
                 ) %>
 
             <%= text_field_tag("person[father][current_village]", nil,
                                :id => "person_father_current_village",
-                               :helpText => "Father Current Village/Town",
-                               :ajaxURL  => "/search_by_village?search="
+                               :helpText => "Father Current Village/Town"
                 ) %>
         </sub>
     </section>
@@ -503,13 +494,12 @@
                                :id => "person_informant_home_ta",
                                :helpText => "Informant Home T/A or Area of Residence",
                                :ajaxURL  => "/search_by_ta?search=",
-                               :tt_onUnload =>"__$('person_informant_home_village').setAttribute('ajaxURL','/search_by_village?ta='+__$('touchscreenInput' + tstCurrentPage).value+'&district='+__$('person_informant_home_district').value)"
+                               :tt_onUnload =>"__$('person_informant_home_village').setAttribute('ajaxURL','/search_by_village?ta='+__$('touchscreenInput' + tstCurrentPage).value+'&district='+__$('person_informant_home_district').value+'&search=')"
                 ) %>
 
             <%= text_field_tag("person[informant][home_village]", nil,
                                :id => "person_informant_home_village",
-                               :helpText => "Informant Home Village/Town",
-                               :ajaxURL  => "/search_by_village?search="
+                               :helpText => "Informant Home Village/Town"
                 ) %>
         </sub>
 
@@ -518,20 +508,18 @@
                                :id => "person_informant_current_district",
                                :helpText => "Informant Current District",
                                :ajaxURL  => "/search_by_district?search=",
-                               :tt_onUnload =>"__$('person_informant_current_ta').setAttribute('ajaxURL','/search_by_ta?district='+__$('touchscreenInput' + tstCurrentPage).value)"
+                               :tt_onUnload =>"__$('person_informant_current_ta').setAttribute('ajaxURL','/search_by_ta?district='+__$('touchscreenInput' + tstCurrentPage).value+'&search=')"
                 ) %>
 
             <%= text_field_tag("person[informant][current_ta]", nil,
                                :id => "person_informant_current_ta",
                                :helpText => "Informant Current T/A or Area of Residence",
-                               :ajaxURL  => "/search_by_ta?search=",
-                               :tt_onUnload =>"__$('person_informant_current_village').setAttribute('ajaxURL','/search_by_village?ta='+__$('touchscreenInput' + tstCurrentPage).value+'&district='+__$('person_informant_current_district').value)"
+                               :tt_onUnload =>"__$('person_informant_current_village').setAttribute('ajaxURL','/search_by_village?ta='+__$('touchscreenInput' + tstCurrentPage).value+'&district='+__$('person_informant_current_district').value+'&search=')"
                 ) %>
 
             <%= text_field_tag("person[informant][current_village]", nil,
                                :id => "person_informant_current_village",
-                               :helpText => "Informant Current Village/Town",
-                               :ajaxURL  => "/search_by_village?search="
+                               :helpText => "Informant Current Village/Town"
                 ) %>
         </sub>
         <sub id="informant_extra_details" name="Informant Extra Details">

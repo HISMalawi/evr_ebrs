@@ -53,16 +53,17 @@ class LoginsController < ApplicationController
   def logout
     # session[:touchcontext] = nil
     logout!
-=begin     
+# =begin     
     unless SETTINGS['app_gate_url'].blank?
       
       redirect_to SETTINGS['app_gate_url'].to_s
     else
-      flash[:notice] = 'You have been logged out. Good Bye!'
-      redirect_to "/", referrer_param => referrer_path
+      # flash[:notice] = 'You have been logged out. Good Bye!'
+      # redirect_to "/", referrer_param => referrer_path
+      redirect_to "/login"
     end
-=end
-    redirect_to "/login"
+# =end
+    
   end
 
   def set_context
