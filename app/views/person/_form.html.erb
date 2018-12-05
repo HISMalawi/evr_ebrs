@@ -258,15 +258,12 @@
         <sub id="mother_birth_details" name="Mother Birth Details">
             <%= text_field_tag("gestation_at_birth", nil,
                                :id => "person_gestation_at_birth",
-                               :absolute_min => '30',
-                               :min => '36',
-                               :absolute_max => '45',
-                               :max => '42',
                                :helpText => "Gestation age at birth in weeks",
                                :tt_onLoad => "document.getElementById('Unknown').style.display = 'none';",
+							   :tt_onUnLoad => "restrictGestationPeriod(__$('person_gestation_at_birth').value)",
                                :tt_pageStyleClass => "NumbersWithUnknown nota",
                                :field_type => 'number',
-                               :optional => true
+                               :optional => false
                 ) %>
 
             <%= text_field_tag("number_of_prenatal_visits", nil,
@@ -550,6 +547,13 @@
 <% end %>
 
 <script>
+	function restrictGestationPeriod(gestation_period) {
+		if(gestation_period < parseInt(30) || gestation_period > parseInt(42)) {
+			showMessage('The value is out of Range: 30 - 42. Please enter a valid value.');
+		    gotoPage(tstCurrentPage - 1);
+		}
+	}
+
     function checkBirthDate(passed_date) {
 
     	var today_date = new Date();
