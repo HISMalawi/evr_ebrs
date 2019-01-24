@@ -8,7 +8,8 @@ remote_user_password: password
 remote_url: http://192.168.5.13:5000
 duplicate_precision: 80
 potential_search: false
-app_gate_url: 
+app_gateway: true
+app_gate_url: http://192.168.85.82:3007
 sync_protocol: 'http'
 sync_host: 0.0.0.0:5984
 sync_database: 
