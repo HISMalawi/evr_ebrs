@@ -510,7 +510,7 @@ class PersonController < ApplicationController
       link  = ""
 
     elsif SETTINGS['scan_from_remote'].to_s == "true"
-      link = "http://#{SETTINGS['remote_user_name']}:#{SETTINGS['remote_user_password']}@#{SETTINGS['remote_url']}/people/create_remote"
+      link = "http://#{SETTINGS['remote_user_name']}:#{SETTINGS['remote_user_password']}@#{SETTINGS['remote_url']}/patient/create_remote"
 
       birthdate = params['person']['birthdate']
 
