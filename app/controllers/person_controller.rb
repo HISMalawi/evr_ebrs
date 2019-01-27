@@ -50,7 +50,7 @@ class PersonController < ApplicationController
 
 
   def show
-    
+
     if params[:next_path].blank?
       @targeturl = request.referrer
     else
@@ -113,7 +113,7 @@ class PersonController < ApplicationController
 
     @actions = ActionMatrix.read_actions(User.current.user_role.role.role, [@status])
     @folders = ActionMatrix.read_folders(User.current.user_role.role.role)
-    
+
     informant_rel = (!@birth_details.informant_relationship_to_person.blank? ?
         @birth_details.informant_relationship_to_person : @birth_details.other_informant_relationship_to_person) rescue nil
 
@@ -309,11 +309,11 @@ class PersonController < ApplicationController
             person["district"] = birth_loc.district
           else
             person["district"] = "Lilongwe"
-          end      
+          end
 
           person["mother_first_name"]= @mother_name.first_name rescue ''
           person["mother_last_name"] =  @mother_name.last_name  rescue ''
-          person["mother_middle_name"] = @mother_name.middle_name rescue '' 
+          person["mother_middle_name"] = @mother_name.middle_name rescue ''
 
           person["mother_home_district"] = Location.find(@mother_person.addresses.last.home_district).name rescue nil
           person["mother_home_ta"] = Location.find(@mother_person.addresses.last.home_ta).name rescue nil
@@ -335,7 +335,7 @@ class PersonController < ApplicationController
           person["father_current_district"] = Location.find(@father_person.addresses.last.current_district).name rescue nil
           person["father_current_ta"] = Location.find(@father_person.addresses.last.current_ta).name rescue nil
           person["father_current_village"] = Location.find(@father_person.addresses.last.current_village).name rescue nil
-        
+
           SimpleElasticSearch.add(person)
 
           if @status == "DC-ACTIVE"
@@ -343,10 +343,10 @@ class PersonController < ApplicationController
             @results = []
             @exact = false
             duplicates = []
-            duplicates = SimpleElasticSearch.query_duplicate_coded(person,99.4) 
+            duplicates = SimpleElasticSearch.query_duplicate_coded(person,99.4)
 
             if duplicates.blank?
-              duplicates = SimpleElasticSearch.query_duplicate_coded(person,SETTINGS['duplicate_precision']) 
+              duplicates = SimpleElasticSearch.query_duplicate_coded(person,SETTINGS['duplicate_precision'])
             else
               @exact = true
             end
@@ -354,10 +354,10 @@ class PersonController < ApplicationController
 
             duplicates.each do |dup|
                 next if DuplicateRecord.where(person_id: person['id']).present?
-                @results << dup if PotentialDuplicate.where(person_id: dup['_id']).blank? 
+                @results << dup if PotentialDuplicate.where(person_id: dup['_id']).blank?
             end
 
-            
+
             if @results.present? && !@birth_details.birth_type.name.to_s.downcase.include?("twin")
                potential_duplicate = PotentialDuplicate.create(person_id: @person.person_id,created_at: (Time.now))
                if potential_duplicate.present?
@@ -373,7 +373,7 @@ class PersonController < ApplicationController
                end
                #PersonRecordStatus.status(@person.id)
 
-            end      
+            end
           end
         else
              @results = []
@@ -382,7 +382,7 @@ class PersonController < ApplicationController
     end
 
   end
-  
+
   def records
 
    if application_mode == 'Facility'
@@ -390,13 +390,13 @@ class PersonController < ApplicationController
    else
       @states = ["DC-Active"]
    end
-   
+
 
     @section = "New Cases"
     @actions = ActionMatrix.read_actions(User.current.user_role.role.role, @states)
 
     #@records = PersonService.query_for_display(@states)
-    
+
     render :template => "person/records", :layout => "data_table"
 
   end
@@ -411,9 +411,9 @@ class PersonController < ApplicationController
 
     $prev_child_id = params[:id]
 
-    
+
     if params[:id].blank?
-      
+
       @person = PersonName.new
       @person_details = PersonBirthDetail.new
       @type_of_birth = "Single"
@@ -439,10 +439,10 @@ class PersonController < ApplicationController
       elsif PersonBirthDetail.find_by_person_id(params[:id]).type_of_birth == 5
          @type_of_birth = "Third Triplet"
       end
-        
-        
+
+
     end
-     
+
      render :layout => "touch_split"
   end
 
@@ -491,71 +491,124 @@ class PersonController < ApplicationController
 
   def create
     type_of_birth = params[:person][:type_of_birth]
-    
+
      if type_of_birth == 'Twin'
 
         type_of_birth = 'First Twin'
         params[:person][:type_of_birth] = 'First Twin'
 
      elsif type_of_birth == 'Triplet'
-      
-         type_of_birth = 'First Triplet'  
-         params[:person][:type_of_birth] = 'First Triplet'                                         
+
+         type_of_birth = 'First Triplet'
+         params[:person][:type_of_birth] = 'First Triplet'
      end
 
     @person = PersonService.create_record(params)
 
+    # when creating from dde directly from eBRS
     if SETTINGS['scan_from_dde'].to_s == "true"
 
       link  = ""
 
     elsif SETTINGS['scan_from_remote'].to_s == "true"
+      # when creating from remote [ART]
       link = "http://#{SETTINGS['remote_user_name']}:#{SETTINGS['remote_user_password']}@#{SETTINGS['remote_url']}/patient/create_remote"
 
-      birthdate = params['person']['birthdate']
+      if SETTINGS['remote_dde_status'].to_s == "true"
+        # if remote [ART] has dded status enabled
+        birthdate = params['person']['birthdate']
 
-      params['birth_day'] = birthdate.to_datetime.day
-      params['birth_month'] = birthdate.to_datetime.month
-      params['birth_year'] = birthdate.to_datetime.year
+        params['patient_day'] = birthdate.to_datetime.day
+        params['patient_month'] = birthdate.to_datetime.month
+        params['patient_year'] = birthdate.to_datetime.year
 
-      demographics_hash = {
-          'occupation' =>"#{(params['attributes']['occupation'] rescue [])}",
-          'education_level'=>"#{(params['person']['level_of_education'] rescue [])}",
-          'religion'=>"#{(params['attributes']['religion'] rescue [])}",
-          'patient_year'=>"#{params['birth_year'] rescue []}",
-          'patient'=> {
-              'gender' =>"#{params['person']['gender']}",
-              'birthplace' =>"#{params['addresses']['address2'] rescue []}",
-              'creator' => 1,
-              'changed_by' => 1
-          },
-          'p_address'=> {
-              'identifier' => "#{params['addresses']['state_province'] rescue []}"},
-          'home_phone' => {
-              'identifier' => "#{(params['attributes']['home_phone_number'] rescue [])}"},
-          'cell_phone' => {
-              'identifier' => "#{(params['attributes']['cell_phone_number'] rescue [])}"},
-          'office_phone' => {
-              'identifier' => "#{(params['attributes']['office_phone_number'] rescue [])}"},
-          'patient_id' => '',
-          'patient_day' => "#{params['birth_day']}",
-          'patientaddress' => {'city_village' => "#{new_params['addresses']['city_village'] rescue []}"},
-          'patient_name' => {
-              'family_name' => "#{params['person']['first_name']}",
-              'given_name' => "#{params['person']['last_name']}",
-              'creator' => 1
-          },
-          'patient_month' => "#{params['birth_month']}",
-          'patient_age' =>{
-              'age_estimate' => "#{params['age_estimate']}"
-          },
-          'age' =>{
-              'identifier' =>''
-          },
-          'current_ta' =>{
-              'identifier' => "#{params['addresses']['county_district'] rescue []}"
-          }
-      }
+        demographics_hash = {
+            'occupation' =>"#{(params['attributes']['occupation'] rescue [])}",
+            'education_level'=>"#{(params['person']['level_of_education'] rescue [])}",
+            'religion'=>"#{(params['attributes']['religion'] rescue [])}",
+            'patient_year'=>"#{params['birth_year'] rescue []}",
+            'patient'=> {
+                'gender' =>"#{params['person']['gender']}",
+                'birthplace' =>"#{params['addresses']['address2'] rescue []}",
+                'creator' => 1,
+                'changed_by' => 1
+            },
+            'p_address'=> {
+                'identifier' => "#{params['addresses']['state_province'] rescue []}"},
+            'home_phone' => {
+                'identifier' => "#{(params['attributes']['home_phone_number'] rescue [])}"},
+            'cell_phone' => {
+                'identifier' => "#{(params['attributes']['cell_phone_number'] rescue [])}"},
+            'office_phone' => {
+                'identifier' => "#{(params['attributes']['office_phone_number'] rescue [])}"},
+            'patient_id' => '',
+            'patient_day' => "#{params['birth_day']}",
+            'patientaddress' => {'city_village' => "#{new_params['addresses']['city_village'] rescue []}"},
+            'patient_name' => {
+                'family_name' => "#{params['person']['first_name']}",
+                'given_name' => "#{params['person']['last_name']}",
+                'middle_name' => "#{params['person']['middle_name'] rescue []}",
+                'creator' => 1
+            },
+            'patient_month' => "#{params['birth_month']}",
+            'patient_age' =>{
+                'age_estimate' => "#{params['age_estimate']}"
+            },
+            'age' =>{
+                'identifier' =>''
+            },
+            'current_ta' =>{
+                'identifier' => "#{params['addresses']['county_district'] rescue []}"
+            }
+        }
+      else
+        # if remote [ART] has dde status disabled
+
+        birthdate = params['person']['birthdate']
+
+        params['birth_day'] = birthdate.to_datetime.day
+        params['birth_month'] = birthdate.to_datetime.month
+        params['birth_year'] = birthdate.to_datetime.year
+
+        demographics_hash = {
+            'occupation' =>"#{(params['attributes']['occupation'] rescue [])}",
+            'education_level'=>"#{(params['person']['level_of_education'] rescue [])}",
+            'religion'=>"#{(params['attributes']['religion'] rescue [])}",
+            'patient_year'=>"#{params['birth_year'] rescue []}",
+            'patient'=> {
+                'gender' =>"#{params['person']['gender']}",
+                'birthplace' =>"#{params['addresses']['address2'] rescue []}",
+                'creator' => 1,
+                'changed_by' => 1
+            },
+            'p_address'=> {
+                'identifier' => "#{params['addresses']['state_province'] rescue []}"},
+            'home_phone' => {
+                'identifier' => "#{(params['attributes']['home_phone_number'] rescue [])}"},
+            'cell_phone' => {
+                'identifier' => "#{(params['attributes']['cell_phone_number'] rescue [])}"},
+            'office_phone' => {
+                'identifier' => "#{(params['attributes']['office_phone_number'] rescue [])}"},
+            'patient_id' => '',
+            'patient_day' => "#{params['birth_day']}",
+            'patientaddress' => {'city_village' => "#{new_params['addresses']['city_village'] rescue []}"},
+            'patient_name' => {
+                'family_name' => "#{params['person']['first_name']}",
+                'given_name' => "#{params['person']['last_name']}",
+                'creator' => 1
+            },
+            'patient_month' => "#{params['birth_month']}",
+            'patient_age' =>{
+                'age_estimate' => "#{params['age_estimate']}"
+            },
+            'age' =>{
+                'identifier' =>''
+            },
+            'current_ta' =>{
+                'identifier' => "#{params['addresses']['county_district'] rescue []}"
+            }
+        }
+      end
     end
 
     remote_person_record  = JSON.parse(RestClient.post(link, demographics_hash.to_json, :content_type => "application/json"))
@@ -582,7 +635,7 @@ class PersonController < ApplicationController
     print_and_redirect("/person/child_id_label?child_id=#{child_id}", '/view_cases') and return
 
     if ["First Twin", "First Triplet", "Second Triplet"].include?(type_of_birth.strip)
-      
+
       redirect_to "/person/new?id=#{@person.id}"
 
     else
@@ -649,7 +702,7 @@ class PersonController < ApplicationController
     @core_person = CorePerson.find(params[:id])
 
     @person_details = PersonBirthDetail.find_by_person_id(params[:id])
-    
+
     @person_name = PersonName.find_by_person_id(params[:id])
 
     @person_mother_name = @person.mother.person_names.first rescue nil
@@ -700,7 +753,7 @@ class PersonController < ApplicationController
     elsif PersonBirthDetail.find_by_person_id(params[:id]).type_of_birth == 5
         @type_of_birth = "Third Triplet"
     end
-            
+
     @field = params['field']
 
     @section = "Update Record"
@@ -779,7 +832,7 @@ class PersonController < ApplicationController
     end
 
     if ["birth_details_birth_weight","birth_details_birth_type","birth_details_other_birth_type","birth_details_gestation_at_birth","birth_details_number_of_prenatal_visits", "birth_details_month_prenatal_care_started","birth_details_mode_of_delivery"].include?(params[:field])
-   
+
       birth_details = PersonBirthDetail.where(person_id: params[:id]).last
 
       if params[:person][:birth_weight].present? && birth_details.birth_weight.to_i != params[:person][:birth_weight].to_i
@@ -823,7 +876,7 @@ class PersonController < ApplicationController
         if params[:person][:number_of_children_born_still_alive].present?
            birth_details.number_of_children_born_still_alive = params[:person][:number_of_children_born_still_alive]
         end
-        
+
         if params[:person][:number_of_children_born_alive_inclusive].present?
           birth_details.number_of_children_born_alive_inclusive = params[:person][:number_of_children_born_alive_inclusive]
         end
@@ -840,7 +893,7 @@ class PersonController < ApplicationController
 
     if ["birth_details_court_order_attached","birth_details_parents_signed","birth_details_parents_married_to_each_other","birth_details_date_of_marriage"  ].include?(params[:field])
       birth_details = PersonBirthDetail.where(person_id: params[:id]).last
-      if params[:person][:parents_married_to_each_other].present? 
+      if params[:person][:parents_married_to_each_other].present?
           birth_details.parents_married_to_each_other = (params[:person][:parents_married_to_each_other] == "Yes" ? 1 : 0)
           if params[:person][:parents_married_to_each_other] == "Yes"
             birth_details.court_order_attached = 0
@@ -851,10 +904,10 @@ class PersonController < ApplicationController
       if params[:person][:date_of_marriage].present?
           if params[:person][:parents_married_to_each_other] == "No"
             birth_details.date_of_marriage =  nil
-          else  
+          else
             birth_details.date_of_marriage = params[:person][:date_of_marriage].to_date.to_s rescue nil
           end
-          
+
       end
 
       if params[:person][:court_order_attached].present?
@@ -880,12 +933,12 @@ class PersonController < ApplicationController
                   middle_name: params[:person][:mother][:middle_name],
                   last_name: params[:person][:mother][:last_name])
           end
-          
+
           if params[:person][:mother][:id_number].present?
               identifier_type = PersonIdentifierType.find_by_name("National ID Number").id
-              
+
               mother_identifier = PersonIdentifier.where(person_id: person_mother.id, person_identifier_type_id: identifier_type).last
-              
+
               if mother_identifier.present?
                  mother_identifier.update_attributes(value: params[:person][:mother][:id_number])
               else
@@ -957,12 +1010,12 @@ class PersonController < ApplicationController
                   middle_name: params[:person][:father][:middle_name],
                   last_name: params[:person][:father][:last_name])
           end
-          
+
           if params[:person][:father][:id_number].present?
               identifier_type = PersonIdentifierType.find_by_name("National ID Number").id
-              
+
               father_identifier = PersonIdentifier.where(person_id: person_father.id, person_identifier_type_id: identifier_type).last
-              
+
               if father_identifier.present?
                  father_identifier.update_attributes(value: params[:person][:mother][:id_number])
               else
@@ -1019,7 +1072,7 @@ class PersonController < ApplicationController
         end
         if person_address.save
           redirect_to "/person/#{params[:id]}/edit?next_path=/view_cases" and return
-        end      
+        end
     end
 
     if ["informant_last_name","informant_first_name","informant_middle_name", "informant_id_number", "informant_relationship"].include?(params[:field])
@@ -1032,12 +1085,12 @@ class PersonController < ApplicationController
                   middle_name: params[:person][:informant][:middle_name],
                   last_name: params[:person][:informant][:last_name])
           end
-          
+
           if params[:person][:informant][:id_number].present?
               identifier_type = PersonIdentifierType.find_by_name("National ID Number").id
-              
+
               informant_identifier = PersonIdentifier.where(person_id: person_father.id, person_identifier_type_id: identifier_type).last
-              
+
               if father_identifier.present?
                  father_identifier.update_attributes(value: params[:person][:informant][:id_number])
               else
@@ -1053,7 +1106,7 @@ class PersonController < ApplicationController
 
     if ["informant_address_home_district","informant_address_home_ta","informant_address_home_village", "informant_address"].include?(params[:field])
       person_informant = Person.find(params[:id]).informant
-      person_address = PersonAddress.find_by_person_id(person_informant.id)      
+      person_address = PersonAddress.find_by_person_id(person_informant.id)
       if params[:person][:informant][:current_district].present?
           person_address.current_district  = Location.find_by_name(params[:person][:informant][:current_district]).id
       end
@@ -1071,12 +1124,12 @@ class PersonController < ApplicationController
       end
       if person_address.save
           redirect_to "/person/#{params[:id]}/edit?next_path=/view_cases" and return
-      end  
+      end
 
     end
-   
+
     if ["informant_cell_phone_number","birth_details_form_signed","child_acknowledgement_of_receipt_date"].include?(params[:field])
-      
+
         person_informant = Person.find(params[:id]).informant
         if params[:person][:informant][:phone_number].present?
             informant_number = PersonAttribute.find_by_person_id(person_informant.id)
@@ -1112,7 +1165,7 @@ class PersonController < ApplicationController
         redirect_to "/person/#{params[:id]}/edit?next_path=/view_cases" and return
     end
 
-  end   
+  end
 
   def person_for_elastic_search(core_person,params)
       person = {}
@@ -1137,7 +1190,7 @@ class PersonController < ApplicationController
          else
             mother_name = nil
          end
-   
+
          person["mother_first_name"] = mother_name.first_name rescue ""
          person["mother_last_name"] =   mother_name.last_name rescue ""
          person["mother_middle_name"] =  mother_name.first_name rescue ""
@@ -1161,7 +1214,7 @@ class PersonController < ApplicationController
          else
             father_name = nil
          end
-         
+
          person["father_first_name"] = father_name.first_name rescue ""
          person["father_last_name"] =   father_name.last_name rescue ""
          person["father_middle_name"] = father_name.first_name rescue ""
@@ -1191,7 +1244,7 @@ class PersonController < ApplicationController
         person["mother_home_district"] = params[:person][:mother][:home_district] rescue nil
         person["mother_home_ta"] = params[:person][:mother][:home_ta] rescue nil
         person["mother_home_village"] = params[:person][:mother][:home_village] rescue nil
-         
+
         person["mother_current_district"] = params[:person][:mother][:current_district] rescue nil
         person["mother_current_ta"] = params[:person][:mother][:current_ta] rescue nil
         person["mother_current_village"] = params[:person][:mother][:current_village] rescue nil
@@ -1203,7 +1256,7 @@ class PersonController < ApplicationController
         person["father_home_district"] = params[:person][:father][:home_district] rescue nil
         person["father_home_ta"] = params[:person][:father][:home_ta] rescue nil
         person["father_home_village"] = params[:person][:father][:home_village] rescue nil
-         
+
         person["father_current_district"] = params[:person][:father][:current_district] rescue nil
         person["father_current_ta"] = params[:person][:father][:current_ta] rescue nil
         person["father_current_village"] = params[:person][:father][:current_village] rescue nil
@@ -1213,10 +1266,10 @@ class PersonController < ApplicationController
   end
 
   def is_twin_or_triplet(type_of_birth)
-    if type_of_birth.include?"Second Twin" 
-      return true 
-    elsif type_of_birth.include?"Second Triplet" 
-      return true 
+    if type_of_birth.include?"Second Twin"
+      return true
+    elsif type_of_birth.include?"Second Triplet"
+      return true
     elsif type_of_birth.to_s.include? "Third Triplet"
       return true
     else
@@ -1225,7 +1278,7 @@ class PersonController < ApplicationController
   end
 
   def parents_married(parents_married,value)
-    
+
     if parents_married == 1
         [value, "mandatory"]
     else
@@ -1237,14 +1290,14 @@ class PersonController < ApplicationController
   #########################################################################
   ############### Duplicate search with elastic search ####################
  def search_similar_record
-    
-     if params[:twin_id].present? 
+
+     if params[:twin_id].present?
         birthdate = Person.where(person_id: params[:twin_id]).first.birthdate.to_time.to_s.split(" ")[0]
      else
         birthdate = (params[:birthdate].to_time.to_s.split(" ")[0] rescue params[:birthdate].to_time)
      end
       person = {
-                      "first_name"=>params[:first_name], 
+                      "first_name"=>params[:first_name],
                       "last_name" => params[:last_name],
                       "middle_name" => (psimilararams[:middle_name] rescue nil),
                       "gender" => params[:gender],
@@ -1264,13 +1317,13 @@ class PersonController < ApplicationController
       else
         results = {:response => []}
       end
-  
+
 
       if results[:response].count == 0
         render :text => {:response => false}.to_json
       else
         render :text => results.to_json
-      end 
+      end
 
   end
 
@@ -1278,7 +1331,7 @@ class PersonController < ApplicationController
       dupliates = SimpleElasticSearch.query_duplicate_coded(person,99.4)
       exact = false
       if dupliates.blank?
-        if params[:type_of_birth] && is_twin_or_triplet(params[:type_of_birth])        
+        if params[:type_of_birth] && is_twin_or_triplet(params[:type_of_birth])
           dupliates = []
         else
           if params[:relationship] == "normal" || params[:relationship] == "adopted"
@@ -1292,7 +1345,7 @@ class PersonController < ApplicationController
       end
       return {:response => dupliates, :exact => exact}
   end
-  
+
   def get_names
     entry = params["search"].soundex
     if params["last_name"]
@@ -1317,12 +1370,12 @@ class PersonController < ApplicationController
   def get_nationality
     nationality_tag = LocationTag.where(name: 'Country').first
     data = ['Malawian']
-    Location.where("LENGTH(country) > 0 AND country != 'Malawian' AND country LIKE (?) AND m.location_tag_id = ?", 
+    Location.where("LENGTH(country) > 0 AND country != 'Malawian' AND country LIKE (?) AND m.location_tag_id = ?",
       "#{params[:search]}%", nationality_tag.id).joins("INNER JOIN location_tag_map m
       ON location.location_id = m.location_id").order('country ASC').map do |l|
       data << l.country
     end
-    
+
     if data.present?
       render text: ("<li>" + data.compact.uniq.join("</li><li>") + "</li>") and return
     else
@@ -1333,12 +1386,12 @@ class PersonController < ApplicationController
   def get_country
     nationality_tag = LocationTag.where(name: 'Country').first
     data = ['Malawi']
-    Location.where("LENGTH(name) > 0 AND country != 'Malawi' AND name LIKE (?) AND m.location_tag_id = ?", 
+    Location.where("LENGTH(name) > 0 AND country != 'Malawi' AND name LIKE (?) AND m.location_tag_id = ?",
       "#{params[:search]}%", nationality_tag.id).joins("INNER JOIN location_tag_map m
       ON location.location_id = m.location_id").order('name ASC').map do |l|
       data << l.name
     end
-    
+
     if data.present?
       render text: ("<li>" + data.compact.uniq.join("</li><li>") + "</li>") and return
     else
@@ -1346,7 +1399,7 @@ class PersonController < ApplicationController
     end
   end
 
-  def get_district 
+  def get_district
 
     cities = ["Blantyre City","Lilongwe City","Mzuzu City","Zomba City"]
 
@@ -1360,9 +1413,9 @@ class PersonController < ApplicationController
                 data << l.name
           else
                 data << l.name
-          end 
+          end
     end
-    
+
 
     if data.present?
       render text: ("<li>" + data.compact.uniq.join("</li><li>") + "</li>") and return
@@ -1377,12 +1430,12 @@ class PersonController < ApplicationController
     location_id_for_district = Location.where(name: district_name).first.id
 
     data = []
-    Location.where("LENGTH(name) > 0 AND name LIKE (?) AND m.location_tag_id = ? AND parent_location = ?", 
+    Location.where("LENGTH(name) > 0 AND name LIKE (?) AND m.location_tag_id = ? AND parent_location = ?",
       "#{params[:search]}%", nationality_tag.id, location_id_for_district).joins("INNER JOIN location_tag_map m
       ON location.location_id = m.location_id").order('name ASC').map do |l|
       data << l.name
     end
-    
+
     if data.present?
       render text: ("<li>" + data.compact.uniq.join("</li><li>") + "</li>") and return
     else
@@ -1395,7 +1448,7 @@ class PersonController < ApplicationController
     location_id_for_district = Location.where(name: district_name).first.id
 
     ta_name = params[:ta]
-    location_id_for_ta = Location.where("name = ? AND parent_location = ?", 
+    location_id_for_ta = Location.where("name = ? AND parent_location = ?",
       ta_name, location_id_for_district).first.id
 
 
@@ -1407,7 +1460,7 @@ class PersonController < ApplicationController
       ON location.location_id = m.location_id").order('name ASC').map do |l|
       data << l.name
     end
-    
+
     if data.present?
       render text: ("<li>" + data.compact.uniq.join("</li><li>") + "</li>") and return
     else
@@ -1434,7 +1487,7 @@ class PersonController < ApplicationController
     ON location.location_id = m.location_id").order('name ASC').map do |l|
     data << l.name
   end
-  
+
   if data.present?
     render text: ("<li>" + data.compact.uniq.join("</li><li>") + "</li>") and return
   else
@@ -1457,7 +1510,7 @@ class PersonController < ApplicationController
     @actions = ActionMatrix.read_actions(User.current.user_role.role.role, @states)
     @targeturl = "/manage_cases"
     @records = [] #PersonService.query_for_display(@states)
-   
+
     render :template => "person/records", :layout => "data_table"
   end
 
@@ -1565,7 +1618,7 @@ class PersonController < ApplicationController
             {
                 "Birth Entry Number" => "#{@birth_details.ben rescue nil}",
                 "Birth Registration Number" => "#{@birth_details.brn  rescue nil}"
-            },  
+            },
             {
                 ["First Name","/update_person?id=#{@person.person_id}&next_path=#{@targeturl}&field=child_first_name"] => "#{@name.first_name rescue nil}",
                 ["Other Name","/update_person?id=#{@person.person_id}&next_path=#{@targeturl}&field=child_middle_name"] => "#{@name.middle_name rescue nil}",
@@ -1719,7 +1772,7 @@ class PersonController < ApplicationController
 
     render :layout => "facility"
 
-  end  
+  end
 
   def view_printed_cases
     @states = ["HQ-PRINTED"]
@@ -1854,7 +1907,7 @@ class PersonController < ApplicationController
                "#{@father_prev_values['middle_name'].present? ? @father_prev_values['middle_name'] : (@father_name.middle_name rescue '')} " +
                "#{@father_prev_values['last_name'].present? ? @father_prev_values['last_name'] : @father_name.last_name}"
         @person_prev_values["father_name"] = father_name
-    end 
+    end
     @targeturl = params[:next_path]
     @section = 'Ammend Case'
     render :layout => "facility"
@@ -1877,7 +1930,7 @@ class PersonController < ApplicationController
 
   def amend_field
     fields = params[:fields].split(",")
-    
+
     if fields.include? "Name"
       person_name = PersonName.find_by_person_id(params[:id])
       person_name.update_attributes(voided: true, void_reason: 'Amendment edited')
@@ -1898,7 +1951,7 @@ class PersonController < ApplicationController
         person_birth_details = PersonBirthDetail.where(person_id: params[:id]).last
         place_of_birth = params[:person][:place_of_birth]
         place_of_birth_id = Location.locate_id_by_tag(params[:person][:place_of_birth], 'Place of Birth')
-        
+
         case place_of_birth
         when "Home"
           district_id = Location.locate_id_by_tag(params[:person][:birth_district], 'District')
@@ -1993,7 +2046,7 @@ class PersonController < ApplicationController
                 person_relationship_type_id: PersonRelationType.where(name: 'Father').last.id
         )
     end
-    redirect_to "/person/ammend_case?id=#{params[:id]}&next_path=#{params[:next_path]}" 
+    redirect_to "/person/ammend_case?id=#{params[:id]}&next_path=#{params[:next_path]}"
   end
 
   def amendiment_comment
@@ -2218,5 +2271,5 @@ class PersonController < ApplicationController
 
     render :text => result.to_json
   end
-  
+
 end
