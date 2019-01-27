@@ -6,6 +6,7 @@ scan_from_remote: true
 remote_user_name: username
 remote_user_password: password
 remote_url: http://192.168.5.13:5000
+remote_dde_status: true
 duplicate_precision: 80
 potential_search: false
 app_gateway: true
