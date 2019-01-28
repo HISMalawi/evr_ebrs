@@ -515,7 +515,8 @@ class PersonController < ApplicationController
       link = "http://#{SETTINGS['remote_user_name']}:#{SETTINGS['remote_user_password']}@#{SETTINGS['remote_url']}/patient/create_remote"
 
       if SETTINGS['remote_dde_status'].to_s == "true"
-        # if remote [ART] has dded status enabled
+        # if remote [ART] has dde status enabled
+        # raise params.inspect
         birthdate = params['person']['birthdate']
 
         params['patient_day'] = birthdate.to_datetime.day
@@ -526,7 +527,7 @@ class PersonController < ApplicationController
             'occupation' =>"#{(params['attributes']['occupation'] rescue [])}",
             'education_level'=>"#{(params['person']['level_of_education'] rescue [])}",
             'religion'=>"#{(params['attributes']['religion'] rescue [])}",
-            'patient_year'=>"#{params['birth_year'] rescue []}",
+            'patient_year'=>"#{params['patient_year'] rescue []}",
             'patient'=> {
                 'gender' =>"#{params['person']['gender']}",
                 'birthplace' =>"#{params['addresses']['address2'] rescue []}",
@@ -542,7 +543,7 @@ class PersonController < ApplicationController
             'office_phone' => {
                 'identifier' => "#{(params['attributes']['office_phone_number'] rescue [])}"},
             'patient_id' => '',
-            'patient_day' => "#{params['birth_day']}",
+            'patient_day' => "#{params['patient_day']}",
             'patientaddress' => {'city_village' => "#{new_params['addresses']['city_village'] rescue []}"},
             'patient_name' => {
                 'family_name' => "#{params['person']['first_name']}",
@@ -550,7 +551,7 @@ class PersonController < ApplicationController
                 'middle_name' => "#{params['person']['middle_name'] rescue []}",
                 'creator' => 1
             },
-            'patient_month' => "#{params['birth_month']}",
+            'patient_month' => "#{params['patient_month']}",
             'patient_age' =>{
                 'age_estimate' => "#{params['age_estimate']}"
             },
