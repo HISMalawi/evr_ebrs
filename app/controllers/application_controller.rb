@@ -2,12 +2,12 @@ class ApplicationController < ActionController::Base
   # Prevent CSRF attacks by raising an exception.
   # For APIs, you may want to use :null_session instead.
   #protect_from_forgery with: :exception
-  protect_from_forgery	#with: :null_session
+  protect_from_forgery	with: :null_session
 
-  before_filter :check_if_logged_in, :except => ['login', 'searched_cases', 'dispatch_list']
+  before_filter :check_if_logged_in, :except => ['login', 'searched_cases', 'dispatch_list', 'create_from_maternity']
 
-  before_filter :check_last_sync_time, :except => ['dispatch_list']
-  before_filter :check_couch_loading, :except => ['dispatch_list']
+  before_filter :check_last_sync_time, :except => ['dispatch_list', 'create_from_maternity']
+  before_filter :check_couch_loading, :except => ['dispatch_list', 'create_from_maternity']
 
 
   def check_last_sync_time

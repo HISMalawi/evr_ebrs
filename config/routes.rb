@@ -1,4 +1,7 @@
 Rails.application.routes.draw do
+  get 'maternity/create_from_maternity'
+	post 'maternity/create_from_maternity'
+
   get 'reports/index'
 
   get 'users/index'
