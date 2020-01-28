@@ -5,6 +5,7 @@
 </style>
 
 <%= javascript_include_tag 'itable', 'data-turbolinks-track' => true %>
+<%= javascript_include_tag 'moment', 'data-turbolinks-track' => true %>
 <script>
 	var barcode_scan_url = "/person/barcode_scan";
 
@@ -81,7 +82,7 @@
                                :validationRule => "^\\d{2}\\/[A-Z][a-z][a-z]\\/\\d{4}$",
                                :validationMessage => "Expecting a date format input.\nPlease use the provided controls.",
                                :absolute_min => Time.now.advance(:weeks => -6).strftime('%Y/%m/%d'),
-                               :absolute_max => Date.today.strftime('%Y/%m/%d'),
+                               :absolute_max => (Date.today + 1.day).strftime('%Y/%m/%d'),
                                :tt_onUnload => "__$('informant_report_date').setAttribute('absolute_min', __$('child_birthdate').value.trim());"
                 ) %>
 
@@ -555,13 +556,13 @@
 	}
 
     function checkBirthDate(passed_date) {
-
-    	var today_date = new Date();
-    	var check_date = new Date(passed_date);
+	return;
+    	var today_date = moment().format('YYYY-MM-DD');
+    	var check_date = moment(passed_date).format('YYYY-MM-DD');
 
     	if(check_date > today_date){
-    		showMessage('Make sure the date is not greater than today.');
-		    gotoPage(tstCurrentPage - 1);
+	  showMessage('Make sure the date is not greater than today.');
+	  gotoPage(tstCurrentPage - 1);
         }
     }
 
