@@ -349,59 +349,7 @@
 
 <% end %>
 
-<!--<div class="button parent_menu" onclick="window.location = '/request_change'" tag=2>
-    <table style="text-align: left;">
-      <tr>
-        <td rowspan="2">
-          <img src="<%= @icoFolder %>" height="60"/>
-        </td>
-        <td style="height: 30px;">
-          Request Change
-        </td>
-      </tr>
-      <tr>
-        <td style="font-size: 11px; font-style: italic;">
-          Request case re-opening at NRB HQ to edit closed case.
-        </td>
-      </tr>
-    </table>
-  </div>
 
-  <div class="button parent_menu" onclick="window.location = '/search_case'" tag=3>
-    <table style="text-align: left;">
-      <tr>
-        <td rowspan="2">
-          <img src="<%= @icoFolder %>" height="60"/>
-        </td>
-        <td style="height: 30px;">
-          Edit Case
-        </td>
-      </tr>
-      <tr>
-        <td style="font-size: 11px; font-style: italic;">
-          Edit open case at DC's office.
-        </td>
-      </tr>
-    </table>
-  </div-->
-
-<!--<div class="button parent_menu" onclick="window.location = '/view_requests'" tag=4>
-    <table style="text-align: left;">
-      <tr>
-        <td rowspan="2">
-          <img src="<%= @icoFolder %>" height="60"/>
-        </td>
-        <td style="height: 30px;">
-          View Requests
-        </td>
-      </tr>
-      <tr>
-        <td style="font-size: 11px; font-style: italic;">
-          View change requests made at DC's office.
-        </td>
-      </tr>
-    </table>
-  </div>-->
 <% if  @folders.include?("Manage Duplicates") %>
     <div class="button parent_menu"  onclick="window.location = '/manage_duplicates_menu'" tag=4>
       <table style="text-align: left;">
@@ -547,4 +495,75 @@
 
 <% end %>
 
+<div style="width: 100%; margin-top: 70px;border-bottom: 2px dotted lightgrey;">&nbsp;</div>
+<div style="width: 100%; margin-top: 25px;">
+  <table id="stats" style="width: 72%; margin: auto;">
+    <caption style="font-weight: bold; font-size: 1.3em;padding-bottom: 10px; color: #3465a4;">Birth Statistics</caption>
+    <tr>
+      <td class="t-header" style="text-align: left;" >&nbsp;</td>
+      <td class="t-header" >Today</td>
+      <td  class="t-header" >This Month</td>
+      <td  class="t-header" >This Year</td>
+      <td  class="t-header" >Ever Since</td>
+    </tr>
+
+    <tr>
+      <td class="t-header" style="text-align: left;"> My Account <span style="font-size: 0.9em;font-style: italic; color: darkgreen;">(<%= User.current.username%>) </td>
+      <td class="t-data" ><%= @me['today'] %></td>
+      <td  class="t-data" ><%= @me['month'] %></td>
+      <td  class="t-data" ><%= @me['year'] %></td>
+      <td  class="t-data" ><%= @me['ever_since'] %></td>
+    </tr>
+
+    <tr>
+      <td class="t-header" style="text-align: left;" >Other Users</td>
+      <td class="t-data" ><%= @others['today'] %></td>
+      <td  class="t-data" ><%= @others['month'] %></td>
+      <td  class="t-data" ><%= @others['year'] %></td>
+      <td  class="t-data" ><%= @others['ever_since'] %></td>
+    </tr>
+
+    <tr>
+      <td class="t-header" style="text-align: left;" >Total</td>
+      <td class="t-data" ><%= @total['today'] %></td>
+      <td  class="t-data" ><%= @total['month'] %></td>
+      <td  class="t-data" ><%= @total['year'] %></td>
+      <td  class="t-data grand-total" ><%= @total['ever_since'] %></td>
+    </tr>
+
+  </table>
 </div>
+
+</div>
+
+<style>
+  .t-header {
+    background: ghostwhite;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .t-header, .t-data{
+    border: 1px  dotted lightgrey;
+    width: 20%;
+    font-size: 1.1em;
+    font-weight: bold;
+    color: #3465a4;
+    padding: 17px;
+  }
+
+  #stats{
+    background: ghostwhite;
+  }
+
+  .t-data{
+    background: white;
+    cursor: pointer;
+  }
+  .grand-total{
+    background: whitesmoke;
+    font-size: 1.2em;
+    padding: 10px;
+    color: black;
+  }
+</style>
