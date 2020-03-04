@@ -113,4 +113,12 @@ class PersonBirthDetail < ActiveRecord::Base
 
       return true
     end
+
+    def self.record_count(user_ids, start_date, end_date)
+
+      PersonBirthDetail.find_by_sql(" SELECT COUNT(*) c FROM person_birth_details d
+                INNER JOIN person_record_statuses prs ON d.person_id = prs.person_id
+                WHERE prs.creator IN (#{user_ids.join(',')})
+                  AND DATE(prs.created_at) BETWEEN '#{start_date.to_date.to_s}' AND '#{end_date.to_date.to_s}' ").first.c
+    end
 end

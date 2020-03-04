@@ -6,6 +6,28 @@ class PersonController < ApplicationController
     @targeturl = "/logout"
     @targettext = "Logout"
 
+    all_users = User.pluck :user_id
+    other_users = all_users - [User.current.id]
+    earliest_date =  "1900-01-01".to_date
+
+    @me = {}
+    @me["today"] = PersonBirthDetail.record_count([User.current.id], Date.today, Date.today)
+    @me["month"] = PersonBirthDetail.record_count([User.current.id], Date.today.beginning_of_month, Date.today.end_of_month)
+    @me["year"] = PersonBirthDetail.record_count([User.current.id], Date.today.beginning_of_year, Date.today.end_of_year)
+    @me['ever_since'] = PersonBirthDetail.record_count([User.current.id], earliest_date, Date.today)
+
+    @others = {}
+    @others["today"] = PersonBirthDetail.record_count(other_users, Date.today, Date.today)
+    @others["month"] = PersonBirthDetail.record_count(other_users, Date.today.beginning_of_month, Date.today.end_of_month)
+    @others["year"] = PersonBirthDetail.record_count(other_users, Date.today.beginning_of_year, Date.today.end_of_year)
+    @others['ever_since'] = PersonBirthDetail.record_count(other_users, earliest_date, Date.today)
+
+    @total = {}
+    @total["today"] = PersonBirthDetail.record_count(all_users, Date.today, Date.today)
+    @total["month"] = PersonBirthDetail.record_count(all_users, Date.today.beginning_of_month, Date.today.end_of_month)
+    @total["year"] = PersonBirthDetail.record_count(all_users, Date.today.beginning_of_year, Date.today.end_of_year)
+    @total['ever_since'] = PersonBirthDetail.record_count(all_users, earliest_date, Date.today)
+
     render :layout => 'facility'
   end
 
@@ -610,7 +632,7 @@ class PersonController < ApplicationController
         person_id: child_id,
         person_identifier_type_id: child_identifier_type_id,
         value: child_national_id
-    )
+    ) rescue nil
 
     #To be contued
     if @person.present? && SETTINGS['potential_search']
