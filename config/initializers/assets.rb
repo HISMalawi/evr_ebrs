@@ -5,6 +5,7 @@ Rails.application.config.assets.version = '1.0'
 Rails.application.config.assets.precompile += %w( dashboard.js )
 Rails.application.config.assets.precompile += %w( DataTables/* )
 Rails.application.config.assets.precompile += %w( itable.js )
+Rails.application.config.assets.precompile += %w( moment.js )
 
 # Add additional assets to the asset load path
 # Rails.application.config.assets.paths << Emoji.images_path
