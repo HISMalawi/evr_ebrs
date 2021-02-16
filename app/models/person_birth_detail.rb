@@ -115,6 +115,8 @@ class PersonBirthDetail < ActiveRecord::Base
     end
 
     def self.record_count(user_ids, start_date, end_date)
+      
+      user_ids = [-1] if user_ids.blank? 
 
       PersonBirthDetail.find_by_sql(" SELECT COUNT(*) c FROM person_birth_details d
                 INNER JOIN person_record_statuses prs ON d.person_id = prs.person_id
