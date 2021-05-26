@@ -4,7 +4,7 @@ class ApplicationController < ActionController::Base
   #protect_from_forgery with: :exception
   protect_from_forgery	with: :null_session
 
-  before_filter :check_if_logged_in, :except => ['login', 'searched_cases', 'dispatch_list', 'create_from_maternity']
+  before_filter :check_if_logged_in, :except => ['login', 'searched_cases', 'dispatch_list', 'create_from_maternity', 'get_birth_report']
 
   before_filter :check_last_sync_time, :except => ['dispatch_list', 'create_from_maternity']
   before_filter :check_couch_loading, :except => ['dispatch_list', 'create_from_maternity']
