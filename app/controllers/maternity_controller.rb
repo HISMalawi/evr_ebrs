@@ -39,7 +39,8 @@ class MaternityController < ApplicationController
   				"parents_married"  => detail.parents_married_to_each_other,
   				"date_of_marriage" => detail.date_of_marriage,
   				"court_order_attached" => detail.court_order_attached,
-  				"parents_signed"       => detail.parents_signed  	
+  				"parents_signed"       => detail.parents_signed,
+  				"creator"    => detail.creator  	
   			},
   			
   			"mother_details" => {
@@ -61,7 +62,9 @@ class MaternityController < ApplicationController
   				"mode_of_delivery" => detail.mode_of_delivery_id,
   				"number_of_children_born_alive_inclusive" => detail.number_of_children_born_alive_inclusive,
   				"number_of_children_born_still_alive" => detail.number_of_children_born_still_alive,
-  				"level_of_education" => detail.level_of_education_id
+  				"level_of_education" => detail.level_of_education_id,
+  				"person_id" => mother_person.id,
+  				"creator"    => detail.creator
   			},
   			
   			"father_details" => {
@@ -76,13 +79,17 @@ class MaternityController < ApplicationController
   				"residential_country" => father_address.residential_country,
   				"current_district" => father_address.current_district,
   				"current_ta" => father_address.current_ta,
-  				"current_village" => father_address.current_village
+  				"current_village" => father_address.current_village,
+  				"person_id" => father_person.id,
+  				"creator"    => detail.creator
   			},
   			
   			"informant_details" => {
   				"mother_is_informant" => ((detail.informant_relationship_to_person == "Mother") ? 1 : 0),
   				"father_is_informant" => ((detail.informant_relationship_to_person == "Father") ? 1 : 0),
   				"relationship_to_child" => detail.informant_relationship_to_person,
+  				"gender"  => informant_person.gender,
+  				"birthdate" => informant_person.birthdate,
   				"first_name" => informant_name.first_name,
   				"middle_name" => informant_name.middle_name,
   				"last_name" => informant_name.last_name,
@@ -94,7 +101,9 @@ class MaternityController < ApplicationController
   				"current_village" => informant_address.current_village,
   				"phone_number"   => "",
   				"form_signed" => detail.form_signed,
-  				"date_reported" => detail.date_reported
+  				"date_reported" => detail.date_reported,
+  				"person_id"  => informant_person.id,
+  				"creator"    => detail.creator
   			}  						
   		}
   	
