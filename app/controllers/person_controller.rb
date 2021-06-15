@@ -1445,6 +1445,8 @@ class PersonController < ApplicationController
       ON location.location_id = m.location_id").order('name ASC').map do |l|
       data << l.name
     end
+    
+    data << "Other"
 
     if data.present?
       render text: ("<li>" + data.compact.uniq.join("</li><li>") + "</li>") and return
@@ -1459,7 +1461,7 @@ class PersonController < ApplicationController
 
     ta_name = params[:ta]
     location_id_for_ta = Location.where("name = ? AND parent_location = ?",
-      ta_name, location_id_for_district).first.id
+      ta_name, location_id_for_district).first.id rescue -1
 
 
     nationality_tag = LocationTag.where(name: 'Village').first
@@ -1470,6 +1472,8 @@ class PersonController < ApplicationController
       ON location.location_id = m.location_id").order('name ASC').map do |l|
       data << l.name
     end
+
+    data << "Other"
 
     if data.present?
       render text: ("<li>" + data.compact.uniq.join("</li><li>") + "</li>") and return
