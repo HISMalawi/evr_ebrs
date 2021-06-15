@@ -1,4 +1,116 @@
 class MaternityController < ApplicationController
+  
+  def get_birth_report
+  	
+  	result = {}
+
+  	  	 	
+  	person_id = params[:person_id]  		  	
+  	detail = PersonBirthDetail.where(person_id: person_id).first
+  	child_name = PersonName.where(person_id: person_id, voided: 0).last
+  	person = Person.find(person_id)
+  	
+  	mother_person = person.mother
+  	mother_name = mother_person.person_names.last
+  	mother_address = mother_person.addresses.last	
+  	
+  	father_person = person.father
+  	father_name = father_person.person_names.last
+  	father_address     = father_person.addresses.last
+  	
+  	
+  	informant_person = person.informant
+  	informant_name = informant_person.person_names.last
+  	informant_address  = informant_person.addresses.last
+  	
+  	cell_phone_attribute_type_id = PersonAttributeType.where(name: "Cell Phone Number").first.id
+  	phone_number = PersonAttribute.where(person_id: informant_person.id, person_attribute_type_id: cell_phone_attribute_type_id, voided: 0).last.value
+  	
+  	result = {
+  			"child_details"  => {
+  				"first_name"   => child_name.first_name,
+  				"middle_name"  => child_name.middle_name,
+  				"last_name"    => child_name.last_name,
+  				"birth_date"   => person.birthdate,
+  				"gender"       => person.gender,
+  				"birth_weight" => detail.birth_weight,
+  				"type_of_birth" => detail.type_of_birth,
+  				"other_type_of_birth" => detail.other_type_of_birth,
+  				"parents_married"  => detail.parents_married_to_each_other,
+  				"date_of_marriage" => detail.date_of_marriage,
+  				"court_order_attached" => detail.court_order_attached,
+  				"parents_signed"       => detail.parents_signed,
+  				"creator"    => detail.creator  	
+  			},
+  			
+  			"mother_details" => {
+  				"first_name" => mother_name.first_name,
+  				"maiden_name" => mother_person.middle_name,
+  				"last_name" => mother_person.last_name,
+  				"birth_date" => mother_person.birthdate,
+  				"citizenship" => mother_address.citizenship,
+  				"home_district" => mother_address.home_district,
+  				"home_ta" => mother_address.home_ta,
+  				"home_village" => mother_address.home_village,
+  				"residential_country" => mother_address.residential_country,
+  				"current_district" =>  mother_address.current_district,
+  				"current_ta" => mother_address.current_ta,
+  				"current_village" =>  mother_address.current_village,
+  				"gestation_at_birth" => detail.gestation_at_birth,
+  				"number_of_prenatal_visits" => detail.number_of_prenatal_visits,
+  				"month_prenatal_care_started" => detail.month_prenatal_care_started,
+  				"mode_of_delivery" => detail.mode_of_delivery_id,
+  				"number_of_children_born_alive_inclusive" => detail.number_of_children_born_alive_inclusive,
+  				"number_of_children_born_still_alive" => detail.number_of_children_born_still_alive,
+  				"level_of_education" => detail.level_of_education_id,
+  				"person_id" => mother_person.id,
+  				"creator"    => detail.creator
+  			},
+  			
+  			"father_details" => {
+  				"first_name" => father_name.first_name,
+  				"middle_name" => father_name.middle_name,
+  				"last_name" => father_name.last_name,
+  				"birth_date" => father_person.birthdate,
+  				"citizenship" => father_address.citizenship,
+  				"home_district" => father_address.home_district,
+  				"home_ta" => father_address.home_ta,
+  				"home_village" => father_address.home_village,
+  				"residential_country" => father_address.residential_country,
+  				"current_district" => father_address.current_district,
+  				"current_ta" => father_address.current_ta,
+  				"current_village" => father_address.current_village,
+  				"person_id" => father_person.id,
+  				"creator"    => detail.creator
+  			},
+  			
+  			"informant_details" => {
+  				"mother_is_informant" => ((detail.informant_relationship_to_person == "Mother") ? 1 : 0),
+  				"father_is_informant" => ((detail.informant_relationship_to_person == "Father") ? 1 : 0),
+  				"relationship_to_child" => detail.informant_relationship_to_person,
+  				"gender"  => informant_person.gender,
+  				"birthdate" => informant_person.birthdate,
+  				"first_name" => informant_name.first_name,
+  				"middle_name" => informant_name.middle_name,
+  				"last_name" => informant_name.last_name,
+  				"home_district" => informant_address.home_district,
+  				"home_ta" => informant_address.home_ta,
+  				"home_village" => informant_address.home_village,
+  				"current_district" => informant_address.current_district,
+  				"current_ta" => informant_address.current_ta,
+  				"current_village" => informant_address.current_village,
+  				"phone_number"   => "",
+  				"form_signed" => detail.form_signed,
+  				"date_reported" => detail.date_reported,
+  				"person_id"  => informant_person.id,
+  				"creator"    => detail.creator
+  			}  						
+  		}
+  	
+  	render :json => result.to_json
+  
+  end
+  
   def create_from_maternity
 
     type_of_birth = params[:person][:type_of_birth]

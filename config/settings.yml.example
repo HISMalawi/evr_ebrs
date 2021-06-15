@@ -14,6 +14,7 @@ app_gate_url: http://192.168.85.82:3007
 sync_protocol: 'http'
 sync_host: 0.0.0.0:5984
 sync_database: 
-sync_username: 
+sync_username: i11sqqq
 sync_password: 
 ebrs_services_link: http://0.0.0.0:10001
+sms_service_link: http://192.168.100.115:3001

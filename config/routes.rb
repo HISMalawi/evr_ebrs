@@ -1,7 +1,10 @@
 Rails.application.routes.draw do
   get 'maternity/create_from_maternity'
-	post 'maternity/create_from_maternity'
+  post 'maternity/create_from_maternity'
 
+  get 'get_birth_report' => 'maternity#get_birth_report'
+  post 'get_birth_report' => 'maternity#get_birth_report'
+	
   get 'reports/index'
 
   get 'users/index'
