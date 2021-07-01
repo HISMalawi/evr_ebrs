@@ -525,8 +525,9 @@ class PersonController < ApplicationController
          params[:person][:type_of_birth] = 'First Triplet'
      end
 
-    @person = PersonService.create_record(params)
-
+    @person = PersonService.create_record(params)    
+    SMSSyncTracker.send_to_sms_service(@person.id)
+    
     # when creating from dde directly from eBRS
     if SETTINGS['scan_from_dde'].to_s == "true"
 
