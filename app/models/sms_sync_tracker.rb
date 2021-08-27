@@ -21,20 +21,23 @@ class SMSSyncTracker < ActiveRecord::Base
 	    end
 	    
 	    pending_trackers = self.pending	    
-	    sms_service_link = "#{SETTINGS["sms_service_link"]}/pending_births"
+           # sms_service_link = "#{SETTINGS["sms_service_link"]}/pending_births"
 	    datetime = DateTime.now.to_s(:db)
 	    	    
 	    pending_trackers.each do |tr|
-	    	sms_service_link = sms_service_link + "?person_id=#{person_id}&datetime=#{datetime}"
-	    	puts sms_service_link
+	        person_id = tr.person_id
+                sms_service_link = "#{SETTINGS["sms_service_link"]}/pending_births"
+	        sms_service_link = sms_service_link + "?person_id=#{person_id}&datetime=#{datetime}"
+                sms_service_link = URI.encode(sms_service_link)
+		puts sms_service_link
 	    	result = RestClient.get(sms_service_link).as_json
 	    	puts result
 
-	    	if result == true
+		if result.to_s == "true"
 	    		tr.node_service_receipt = true
 	    		tr.date_of_receipt = DateTime.now.to_s(:db)
 	    		tr.save
-;	    	end 
+	    	end 
 	    end
 	        
     end
