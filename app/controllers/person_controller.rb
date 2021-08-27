@@ -526,7 +526,7 @@ class PersonController < ApplicationController
      end
 
     @person = PersonService.create_record(params)    
-    SMSSyncTracker.send_to_sms_service(@person.id)
+    SMSSyncTracker.send_to_sms_service(@person.id) rescue nil
     
     # when creating from dde directly from eBRS
     if SETTINGS['scan_from_dde'].to_s == "true"
@@ -618,7 +618,7 @@ class PersonController < ApplicationController
       end
     end
 
-    remote_person_record  = JSON.parse(RestClient.post(link, demographics_hash.to_json, :content_type => "application/json"))
+    remote_person_record  = JSON.parse(RestClient.post(link, demographics_hash.to_json, :content_type => "application/json")) rescue {"npid" => "TEST"}
 
     if SETTINGS['remote_dde_status'].to_s == "true"
       child_national_id = remote_person_record['npid']
@@ -674,7 +674,7 @@ class PersonController < ApplicationController
 
   def child_id_label
     print_string = child_label(params[:child_id])
-
+    print_string += nr8_stickers(params[:child_id])
     send_data(print_string,:type=>"application/label; charset=utf-8", :stream=> false, :filename=>"#{params[:child_id]}#{rand(10000)}.lbl", :disposition => "inline")
   end
 
@@ -706,6 +706,115 @@ class PersonController < ApplicationController
   end
   #-------------------------------
 
+  def nr8_stickers(person_id)
+     child = Person.find(person_id)
+     child_name = PersonName.where(person_id: person_id, voided: 0).last
+     detail = PersonBirthDetail.where(person_id: person_id).last
+     birth_loc = Location.find(detail.birth_location_id).name
+
+     nid_type_id = PersonIdentifierType.where(name: "National ID Number").last.id
+	     
+     mother = child.mother
+     mother_name = PersonName.where(person_id: mother.person_id).last
+     mother_address = PersonAddress.where(person_id: mother.person_id).last
+     mother_physical_address = ([
+	     (Location.find(mother_address.current_village).name rescue mother_address.current_village_other),
+	     (Location.find(mother_address.current_ta).name rescue mother_address.current_ta_other),
+	     (Location.find(mother_address.current_district).name rescue mother_address.current_district_other)
+     ].uniq - ["Other"]).delete_if{|v| v.blank?}.join(", ")
+     
+      mother_home_address = ([
+	     (Location.find(mother_address.home_village).name rescue mother_address.home_village_other),
+	     (Location.find(mother_address.home_ta).name rescue mother_address.home_ta_other),
+	     (Location.find(mother_address.home_district).name rescue mother_address.home_district_other)
+     ].uniq - ["Other"]).delete_if{|v| v.blank?}.join(", ")
+     mother_nid = PersonIdentifier.where(person_identifier_type_id: nid_type_id, person_id: mother.person_id, voided: 0).last.value rescue "N/A"
+     
+     father_string = ""
+     father = child.father
+     if !father.blank?
+	     father_name = PersonName.where(person_id: father.person_id).last
+	     father_address = PersonAddress.where(person_id: father.person_id).last
+	     father_physical_address = ([
+		     (Location.find.(father_address.current_village).name rescue father_address.current_village_other),
+		     (Location.find(father_address.current_ta).name rescue father_address.current_ta_other),
+		     (Location.find(father_address.current_district).name rescue father_address.current_district_other)
+	     ].uniq - ["Other"]).delete_if{|v| v.blank?}.join(", ")
+	     
+	      father_home_address = ([
+		     (Location.find(father_address.home_village).name rescue father_address.home_village_other),
+		     (Location.find(father_address.home_ta).name rescue father_address.home_ta_other),
+		     (Location.find(father_address.home_district).name rescue father_address.home_district_other)
+	     ].uniq - ["Other"]).delete_if{|v| v.blank?}.join(", ")
+	     father_nid = PersonIdentifier.where(person_identifier_type_id: nid_type_id, person_id: father.person_id, voided: 0).last.value rescue "N/A"
+     end
+     
+     father_string = 
+"
+N
+A35,10,0,1,2,2,N,\"Father: #{father_name.first_name} #{father_name.middle_name} #{father_name.last_name} (#{Location.find(father_address.citizenship).country})\"
+A35,90,0,1,1,2,N,\"DOB: #{(father.birthdate.to_date.strftime('%d/%b/%Y') rescue 'Unkown')}                    National ID: #{father_nid}\"
+A35,130,0,1,1,2,N,\"Physical Address: #{father_physical_address}\"
+A35,170,0,1,1,2,N,\"Home Address    :  #{father_home_address}\"
+P1"
+
+	informant = child.informant
+	informant_name = PersonName.where(person_id: informant.person_id).last
+	informant_address = PersonAddress.where(person_id: informant.person_id).last
+	informant_physical_address = ([
+	     (Location.find.(informant_address.current_village).name rescue informant_address.current_village_other),
+	     (Location.find(informant_address.current_ta).name rescue informant_address.current_ta_other),
+	     (Location.find(informant_address.current_district).name rescue informant_address.current_district_other)
+	].uniq - ["Other"]).delete_if{|v| v.blank?}.join(", ")
+
+
+        informant_physical_address = mother_physical_address if detail.informant_relationship_to_person == "Mother"
+        informant_physical_address = father_physical_address if detail.informant_relationship_to_person == "Father"
+        
+	phone_type_id = PersonAttributeType.where(name: "Cell Phone Number").last.id
+	phone = PersonAttribute.where(person_attribute_type_id: phone_type_id, person_id: informant.person_id, voided: 0).last.value
+	phone = "N/A" if (phone.blank? || phone == "Unknown")
+	informant_nid = PersonIdentifier.where(person_identifier_type_id: nid_type_id, person_id: informant.person_id, voided: 0).last.value rescue "N/A"
+	address = "#{informant_address.address_line_1} #{informant_address.address_line_2}".strip 
+	address = "N/A" if (address.blank? || address == "address")
+"    
+N
+A35,10,0,1,2,2,N,\"Child:  #{child_name.first_name} #{child_name.middle_name} #{child_name.last_name} (#{child.gender})\"
+A35,50,0,1,1,2,N,\"DOB: #{child.birthdate.to_date.strftime('%d/%b/%Y')}\"
+A35,90,0,1,1,2,N,\"Birth Place:  #{birth_loc}\"
+A35,130,0,1,1,2,N,\"Birth Weight:  #{detail.birth_weight} KG\"
+A35,170,0,1,1,2,N,\"Type of Birth:  #{PersonTypeOfBirth.find(detail.type_of_birth).name}\"
+A35,210,0,1,1,2,N,\"Parent Married:  #{{'1' => 'Yes', '0' => 'No'}[detail.parents_married_to_each_other.to_s]}\"
+A35,250,0,1,1,2,N,\"Date of Marriage:  #{(detail.date_of_marriage.to_date.strftime('%d/%b/%Y') rescue 'Unknown')}\"
+P1
+
+N
+A35,10,0,1,2,2,N,\"Mother: #{mother_name.first_name} #{mother_name.middle_name} #{mother_name.last_name} (#{Location.find(mother_address.citizenship).country})\"
+A35,50,0,1,1,2,N,\"DOB: #{(mother.birthdate.to_date.strftime('%d/%b/%Y') rescue 'Unknown')}                   National ID: #{mother_nid}\"
+A35,90,0,1,1,2,N,\"Physical Address: #{mother_physical_address}\"
+A35,130,0,1,1,2,N,\"Home Address    :  #{mother_home_address}\"
+A35,170,0,1,1,2,N,\"Gestation:  #{detail.gestation_at_birth}wks    Delivery Mode: #{detail.mode_of_delivery.name}   Prenatal Visits: #{detail.number_of_prenatal_visits}\"
+A35,210,0,1,1,2,N,\"Number of Children born alive  :  #{detail.number_of_children_born_alive_inclusive}   Number of Children still alive: #{detail.number_of_children_born_still_alive}\"
+A35,250,0,1,1,2,N,\"Level of Education    : #{detail.level_of_education}\"
+P1
+#{father_string}
+
+
+N
+q380 
+Q380,32,-16
+A35,10,0,1,2,2,N,\"Informant:  #{informant_name.first_name} #{informant_name.middle_name} #{informant_name.last_name} (#{Location.find(informant_address.citizenship).country})\"
+A35,50,0,1,1,2,N,\"National ID:   #{informant_nid}\"
+A35,90,0,1,1,2,N,\"Relationship to Child:   #{detail.informant_relationship_to_person}\"
+A35,130,0,1,1,2,N,\"Physical Address: #{informant_physical_address}\"
+A35,170,0,1,1,2,N,\"Postal Address    :  #{address}\"
+A35,210,0,1,1,2,N,\"Phone Number    :  #{phone}\"
+A35,250,0,1,1,2,N,\"Form Signed  :  #{{'1' => 'Yes', '0' => 'No'}[detail.form_signed.to_s]}      Date Signed: #{detail.date_reported.to_date.strftime('%d/%b/%Y')}\"
+P1
+"
+     
+  end 
+  
   def update_person
 
     @person = Person.find(params[:id])
