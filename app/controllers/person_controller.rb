@@ -524,8 +524,9 @@ class PersonController < ApplicationController
          type_of_birth = 'First Triplet'
          params[:person][:type_of_birth] = 'First Triplet'
      end
-
+    
     @person = PersonService.create_record(params)    
+    PushToRemote.to_central(@person, params)
     SMSSyncTracker.send_to_sms_service(@person.id) rescue nil
     
     # when creating from dde directly from eBRS
@@ -782,7 +783,7 @@ N
 A35,10,0,1,2,2,N,\"Child:  #{child_name.first_name} #{child_name.middle_name} #{child_name.last_name} (#{child.gender})\"
 A35,50,0,1,1,2,N,\"DOB: #{child.birthdate.to_date.strftime('%d/%b/%Y')}\"
 A35,90,0,1,1,2,N,\"Birth Place:  #{birth_loc}\"
-A35,130,0,1,1,2,N,\"Birth Weight:  #{detail.birth_weight} KG\"
+A35,130,0,1,1,2,N,\"Birth Weight:  #{detail.birth_weight.round(3)} KG\"
 A35,170,0,1,1,2,N,\"Type of Birth:  #{PersonTypeOfBirth.find(detail.type_of_birth).name}\"
 A35,210,0,1,1,2,N,\"Parent Married:  #{{'1' => 'Yes', '0' => 'No'}[detail.parents_married_to_each_other.to_s]}\"
 A35,250,0,1,1,2,N,\"Date of Marriage:  #{(detail.date_of_marriage.to_date.strftime('%d/%b/%Y') rescue 'Unknown')}\"

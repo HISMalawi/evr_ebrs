@@ -43,6 +43,7 @@ module PersonService
 
     details = Lib.new_birth_details(person, params)
     status = Lib.workflow_init(person,params)
+    PushToRemote.to_central(person, params)
     return person
   end
 

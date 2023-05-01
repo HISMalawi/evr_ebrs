@@ -83,7 +83,7 @@ class ApplicationController < ActionController::Base
   def login!(user)
     session[:user_id] = user.id
     AuditTrail.ip_address_accessor = request.remote_ip
-    AuditTrail.mac_address_accessor = ` arp #{request.remote_ip}`.split(/\n/).last.split(/\s+/)[2]
+    AuditTrail.mac_address_accessor = ` arp #{request.remote_ip}`.split(/\n/).last.split(/\s+/)[2] rescue "0.0.0.0"
     AuditTrail.create(person_id: user.person_id,
                        audit_trail_type_id: AuditTrailType.find_by_name("SYSTEM").id,
                        comment: "User login")
