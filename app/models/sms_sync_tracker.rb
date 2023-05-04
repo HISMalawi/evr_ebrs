@@ -39,6 +39,7 @@ class SMSSyncTracker < ActiveRecord::Base
 	    		tr.save
 	    	end 
 	    end
+
 	        
     end
 end
