@@ -526,9 +526,8 @@ class PersonController < ApplicationController
      end
     
     @person = PersonService.create_record(params)    
-    PushToRemote.to_central(@person, params)
+    PushToRemote.insert_update_tracker(@person.id, 0)
     SMSSyncTracker.send_to_sms_service(@person.id) rescue nil
-    
     # when creating from dde directly from eBRS
     if SETTINGS['scan_from_dde'].to_s == "true"
 
