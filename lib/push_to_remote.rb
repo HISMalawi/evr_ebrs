@@ -39,7 +39,7 @@ module PushToRemote
                                                 CONSTRAINT tracker_ibfk_1 FOREIGN KEY (person_id) REFERENCES person (person_id)
                                             ) ENGINE=InnoDB DEFAULT CHARSET=latin1")
         url = "#{SYNC_SETTINGS[:protocol]}://#{SYNC_SETTINGS[:host]}:#{SYNC_SETTINGS[:port]}/"
-        url = URI.parse(url)
+        #url = URI.parse(url)
         timeout_period = 120
         authentication_token = self.check_authentication(url,timeout_period)
         data = {
@@ -183,7 +183,7 @@ module PushToRemote
                 :birthdate => person.birthdate,
                 :place_of_birth =>  "Health Facility",
                 :birth_district =>  district_of_birth,
-                :birth_hospital =>  place_of_birth_hospital,
+                :hospital_of_birth =>  place_of_birth_hospital,
                 :parents_married_to_each_other =>( pbd.parents_married_to_each_other == 1 ? "Yes": "No"),
                 :date_of_marriage => pbd.date_of_marriage,
                 :mother =>{
