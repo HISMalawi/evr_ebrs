@@ -174,6 +174,24 @@ module PushToRemote
             next if user.blank?
             users << user
         end
+        father = {}
+        if father_person.present?
+            father = {
+                :first_name => father_name.first_name,
+                :middle_name => father_name.middle_name,
+                :last_name => father_name.last_name,
+                :birthdate => father_person.birthdate,
+                :citizenship => (father_address.present? && father_address.citizenship.present? ? Location.find(father_address.citizenship).name : ""),
+                :residential_country => (father_address.present? && father_address.residential_country.present? ? Location.find(father_address.residential_country).name : ""),
+                :current_district =>  (Location.find(father_address.current_district).name rescue nil ),
+                :current_ta =>  (Location.find(father_address.current_ta).name rescue father_address.current_ta_other),
+                :current_village =>  (Location.find(father_address.current_village).name rescue father_address.current_village_other ),
+                :home_country =>  (Location.find(father_address.citizenship).name rescue nil ),
+                :home_district =>  (Location.find(father_address.home_district).name rescue nil ),
+                :home_ta =>  (Location.find(father_address.home_ta).name rescue father_address.home_ta_other ),
+                :home_village =>  (Location.find(father_address.home_village).name rescue father_address.home_village_other )
+            }
+        end
         params = {
             :person => {
                 :first_name => person_name.first_name,
@@ -201,21 +219,7 @@ module PushToRemote
                     :home_ta =>  (Location.find(mother_address.home_ta).name rescue mother_address.home_ta_other ),
                     :home_village =>  (Location.find(mother_address.home_village).name rescue mother_address.home_village_other )
                 },
-                :father =>{
-                    :first_name => father_name.first_name,
-                    :middle_name => father_name.middle_name,
-                    :last_name => father_name.last_name,
-                    :birthdate => father_person.birthdate,
-                    :citizenship => (father_address.present? && father_address.citizenship.present? ? Location.find(father_address.citizenship).name : ""),
-                    :residential_country => (father_address.present? && father_address.residential_country.present? ? Location.find(father_address.residential_country).name : ""),
-                    :current_district =>  (Location.find(father_address.current_district).name rescue nil ),
-                    :current_ta =>  (Location.find(father_address.current_ta).name rescue father_address.current_ta_other),
-                    :current_village =>  (Location.find(father_address.current_village).name rescue father_address.current_village_other ),
-                    :home_country =>  (Location.find(father_address.citizenship).name rescue nil ),
-                    :home_district =>  (Location.find(father_address.home_district).name rescue nil ),
-                    :home_ta =>  (Location.find(father_address.home_ta).name rescue father_address.home_ta_other ),
-                    :home_village =>  (Location.find(father_address.home_village).name rescue father_address.home_village_other )
-                },
+                :father =>father,
                 :informant =>{
                     :first_name => informant_name.first_name,
                     :middle_name => informant_name.middle_name,
