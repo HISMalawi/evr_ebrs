@@ -364,7 +364,8 @@ module PushToRemote
             :users => (users.as_json rescue []),
             :statuses => (statuses.as_json rescue []),
             :birth_entry_number => (birth_entry_number.present? ? birth_entry_number : (pbd.district_id_number rescue "")),
-            :birth_registration_number => (birth_registration_number.present? ? birth_registration_number: (brn_counter rescue ""))
+            :birth_registration_number => (birth_registration_number.present? ? birth_registration_number: (brn_counter rescue "")),
+            :date_reported => (pbd.date_reported.present? pbd.date_reported : pbd.created_at)
         }
     end
 
